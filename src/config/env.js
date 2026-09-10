@@ -32,4 +32,6 @@ export const env = {
   isProd: parsed.data.NODE_ENV === 'production',
   isDev: parsed.data.NODE_ENV === 'development',
   corsOrigins: parsed.data.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean),
+  // "*" opens the API to every origin (see the cors() setup in app.js).
+  allowAllOrigins: parsed.data.CORS_ORIGINS.trim() === '*',
 };

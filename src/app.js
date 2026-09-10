@@ -28,8 +28,16 @@ export function createApp() {
   app.use(
     cors({
       origin(origin, cb) {
-        // Allow server-to-server and same-origin requests with no Origin header.
-        if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
+        // No Origin header: server-to-server, curl, same-origin.
+        if (!origin) return cb(null, true);
+
+        // CORS_ORIGINS=* means "any origin". We reflect the caller's origin
+        // rather than sending a literal "*", because browsers refuse a wildcard
+        // on credentialed requests — and the admin panel sends its refresh
+        // cookie with every call.
+        if (env.allowAllOrigins) return cb(null, true);
+
+        if (env.corsOrigins.includes(origin)) return cb(null, true);
         return cb(new Error(`Origin ${origin} is not allowed by CORS`));
       },
       credentials: true,
