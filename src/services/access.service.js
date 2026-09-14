@@ -1,9 +1,29 @@
 import { Role } from '../models/Role.js';
-import { DEFAULT_ROLES, PERMISSIONS, SUPER_ADMIN } from '../lib/permissions.js';
+import { DEFAULT_ROLES, PERMISSIONS, LEGACY_PERMISSIONS, SUPER_ADMIN } from '../lib/permissions.js';
 import { logger } from '../config/logger.js';
+
+/**
+  * Rewrites pre-module permission keys ("content.manage") into the per-module
+  * ones they stand for, so an existing role keeps exactly the access it had.
+  * Runs once per boot and is a no-op afterwards.
+  */
+async function migrateLegacyPermissions() {
+  const roles = await Role.find({ permissions: { $in: Object.keys(LEGACY_PERMISSIONS) } }).lean();
+  if (!roles.length) return;
+
+  await Promise.all(roles.map((role) => {
+    const permissions = [...new Set(
+      role.permissions.flatMap((p) => LEGACY_PERMISSIONS[p] || (PERMISSIONS.includes(p) ? [p] : [])),
+    )];
+    return Role.updateOne({ _id: role._id }, { $set: { permissions } });
+  }));
+  logger.info(`Roles            migrated ${roles.length} role(s) to per-module permissions`);
+}
 
 /** Inserts any missing default role. Never touches roles that already exist. */
 export async function ensureDefaultRoles() {
+  await migrateLegacyPermissions();
+
   const results = await Promise.all(
     DEFAULT_ROLES.map((role) => Role.updateOne({ key: role.key }, { $setOnInsert: role }, { upsert: true })),
   );
@@ -38,6 +58,9 @@ export const sortRoles = (roles) => [...roles].sort((a, b) => {
 });
 
 export const hasPermission = (access, ...perms) => perms.some((p) => access?.permissions.includes(p));
+
+/** True if the role can change anything at all — used by the shared media library. */
+export const canEditSomething = (access) => Boolean(access?.permissions.some((p) => p.endsWith('.edit')));
 
 /**
  * Mongo filter restricting enquiries to what the current user may see.

@@ -6,7 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ok, created, noContent } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
 import { recordAudit } from '../models/AuditLog.js';
-import { PERMISSION_GROUPS, LEAD_SCOPES, SUPER_ADMIN } from '../lib/permissions.js';
+import { MODULE_GROUPS, ACTIONS, LEAD_SCOPES, SUPER_ADMIN } from '../lib/permissions.js';
 import { sortRoles } from '../services/access.service.js';
 
 // Roles with their member counts, plus the permission catalog the editor renders.
@@ -17,7 +17,7 @@ export const list = asyncHandler(async (_req, res) => {
   ]);
   const countMap = Object.fromEntries(counts.map((c) => [c._id, c.count]));
   const items = sortRoles(roles).map((r) => ({ ...r.toJSON(), userCount: countMap[r.key] || 0 }));
-  return ok(res, items, { permissionGroups: PERMISSION_GROUPS, leadScopes: LEAD_SCOPES });
+  return ok(res, items, { moduleGroups: MODULE_GROUPS, actions: ACTIONS, leadScopes: LEAD_SCOPES });
 });
 
 export const create = asyncHandler(async (req, res) => {

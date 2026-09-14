@@ -9,6 +9,7 @@ import * as roleCtrl from '../../controllers/role.controller.js';
 import * as dashboardCtrl from '../../controllers/dashboard.controller.js';
 import * as uploadCtrl from '../../controllers/upload.controller.js';
 import { requireAuth, canManageUsers, requirePermission } from '../../middleware/auth.js';
+import { hasPermission, canEditSomething } from '../../services/access.service.js';
 import { validate } from '../../middleware/validate.js';
 import { idParamSchema, listQuerySchema } from '../../validators/common.validators.js';
 import { settingsSchema } from '../../validators/settings.validators.js';
@@ -30,18 +31,20 @@ router.use('/', contentRoutes);
 router.use('/enquiries', enquiryRoutes);
 
 // Editable section copy
-router.get('/sections', requirePermission('sections.edit'), sectionCtrl.list);
-router.post('/sections', requirePermission('sections.edit'), validate(sectionSchema), sectionCtrl.create);
-router.get('/sections/:id', requirePermission('sections.edit'), validate(idParamSchema, 'params'), sectionCtrl.get);
-router.patch('/sections/:id', requirePermission('sections.edit'), validate(idParamSchema, 'params'), validate(sectionSchema.partial()), sectionCtrl.update);
+const canViewSections = requirePermission('sections.view', 'sections.edit');
+const canEditSections = requirePermission('sections.edit');
+router.get('/sections', canViewSections, sectionCtrl.list);
+router.post('/sections', canEditSections, validate(sectionSchema), sectionCtrl.create);
+router.get('/sections/:id', canViewSections, validate(idParamSchema, 'params'), sectionCtrl.get);
+router.patch('/sections/:id', canEditSections, validate(idParamSchema, 'params'), validate(sectionSchema.partial()), sectionCtrl.update);
 router.delete('/sections/:id', requirePermission('sections.delete'), validate(idParamSchema, 'params'), sectionCtrl.remove);
 
 // Site settings
-router.get('/settings', settingsCtrl.get);
-router.patch('/settings', requirePermission('settings.manage'), validate(settingsSchema), settingsCtrl.update);
+router.get('/settings', requirePermission('settings.view', 'settings.edit'), settingsCtrl.get);
+router.patch('/settings', requirePermission('settings.edit'), validate(settingsSchema), settingsCtrl.update);
 // Email & SMTP — credentials, lead notification switches, delivery log, previews
-const canManageEmail = requirePermission('settings.manage');
-router.get('/settings/email', canManageEmail, emailCtrl.get);
+const canManageEmail = requirePermission('settings.edit');
+router.get('/settings/email', requirePermission('settings.view', 'settings.edit'), emailCtrl.get);
 router.put('/settings/email', canManageEmail, validate(emailConfigSchema), emailCtrl.update);
 router.post('/settings/email/verify', canManageEmail, validate(smtpVerifySchema), emailCtrl.verify);
 router.post('/settings/email/test', canManageEmail, validate(testEmailSchema), emailCtrl.sendTest);
@@ -49,7 +52,12 @@ router.get('/settings/email/logs', canManageEmail, emailCtrl.logs);
 router.get('/settings/email/preview/:template', canManageEmail, emailCtrl.preview);
 
 // Media library — image fields on content, sections and settings upload through here too.
-const canUseMedia = requirePermission('media.upload', 'content.manage', 'sections.edit', 'settings.manage');
+// Anyone who can edit anything needs the picker, so media access follows any .edit permission.
+const canUseMedia = (req, res, next) => (
+  hasPermission(req.access, 'media.view', 'media.edit') || canEditSomething(req.access)
+    ? next()
+    : requirePermission('media.view')(req, res, next)
+);
 router.get('/uploads', canUseMedia, uploadCtrl.list);
 router.post('/uploads', canUseMedia, uploadCtrl.uploadMiddleware, uploadCtrl.upload);
 router.delete('/uploads/:filename', requirePermission('media.delete'), uploadCtrl.remove);

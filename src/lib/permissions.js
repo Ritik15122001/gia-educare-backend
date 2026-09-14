@@ -1,49 +1,89 @@
+import { RESOURCES } from './resourceRegistry.js';
+
 /**
- * Every permission a role can be granted, grouped the way the admin panel's
- * role editor shows them. The admin reads this catalog from GET /admin/roles,
- * so it is the only copy — add a permission here and gate a route with it.
+ * Permissions are per module, per action: `<module>.<action>`, e.g.
+ * `destinations.edit`. Modules come from the resource registry plus the
+ * hand-written screens, so a new content collection appears in the role editor
+ * automatically. The admin reads this catalog from GET /admin/roles — it is the
+ * only copy.
  *
  * Team accounts and roles themselves are deliberately *not* grantable: they
  * stay super-admin only, so no custom role can escalate its own access.
  */
-export const PERMISSION_GROUPS = [
+
+export const ACTIONS = [
+  { key: 'view', label: 'View' },
+  { key: 'edit', label: 'Edit' },
+  { key: 'delete', label: 'Delete' },
+];
+
+const mod = (key, label, { actions = ['view', 'edit', 'delete'], actionLabels, extras = [], note } = {}) => ({
+  key,
+  label,
+  actions,
+  actionLabels,
+  extras,
+  note,
+});
+
+export const MODULE_GROUPS = [
   {
     key: 'leads',
     label: 'Leads',
-    permissions: [
-      { key: 'leads.view', label: 'View enquiries' },
-      { key: 'leads.edit', label: 'Change status and add notes' },
-      { key: 'leads.assign', label: 'Assign enquiries to roles and people' },
-      { key: 'leads.export', label: 'Export to CSV' },
-      { key: 'leads.delete', label: 'Delete enquiries' },
+    modules: [
+      mod('leads', 'Enquiries', {
+        actionLabels: { edit: 'Change status & notes' },
+        extras: [
+          { key: 'leads.assign', label: 'Assign to roles and people' },
+          { key: 'leads.export', label: 'Export CSV' },
+        ],
+        note: 'Which enquiries they see is set by "Can see" above.',
+      }),
     ],
   },
   {
     key: 'content',
-    label: 'Website',
-    permissions: [
-      { key: 'content.manage', label: 'Edit content collections (destinations, courses, blog…)' },
-      { key: 'sections.edit', label: 'Edit section copy' },
-      { key: 'sections.delete', label: 'Delete section copy' },
-      { key: 'media.upload', label: 'Browse and upload media' },
-      { key: 'media.delete', label: 'Delete media' },
-    ],
+    label: 'Website content',
+    // Every content collection is its own module, in the registry's own order.
+    modules: RESOURCES.map((r) => mod(r.name, r.label || r.name)),
   },
   {
     key: 'site',
     label: 'Site',
-    permissions: [
-      { key: 'settings.manage', label: 'Edit site settings and email, see recent activity' },
+    modules: [
+      mod('sections', 'Section copy'),
+      mod('media', 'Media library', { actionLabels: { edit: 'Upload' } }),
+      mod('settings', 'Site settings & email', { actions: ['view', 'edit'] }),
     ],
   },
 ];
 
-export const PERMISSIONS = PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.key));
+export const MODULES = MODULE_GROUPS.flatMap((g) => g.modules);
+
+export const PERMISSIONS = MODULES.flatMap((m) => [
+  ...m.actions.map((a) => `${m.key}.${a}`),
+  ...m.extras.map((e) => e.key),
+]);
+
+/**
+ * Pre-module permission keys, mapped to their replacements. Applied once to
+ * every stored role on boot so existing roles keep exactly the access they had.
+ */
+export const LEGACY_PERMISSIONS = {
+  'content.manage': RESOURCES.flatMap((r) => [`${r.name}.view`, `${r.name}.edit`, `${r.name}.delete`]),
+  'sections.edit': ['sections.view', 'sections.edit'],
+  'sections.delete': ['sections.delete'],
+  'media.upload': ['media.view', 'media.edit'],
+  'media.delete': ['media.delete'],
+  'settings.manage': ['settings.view', 'settings.edit'],
+};
 
 // Who sees which enquiries: every lead, or only those assigned to the user or their role.
 export const LEAD_SCOPES = ['all', 'assigned'];
 
 export const SUPER_ADMIN = 'super_admin';
+
+const CONTENT_KEYS = RESOURCES.map((r) => r.name);
 
 /**
  * Roles that always exist. They are inserted on boot if missing and never
@@ -61,7 +101,7 @@ export const DEFAULT_ROLES = [
   {
     key: 'admin',
     name: 'Admin',
-    description: 'Content, every lead and site settings.',
+    description: 'Every module and every lead.',
     permissions: PERMISSIONS,
     leadScope: 'all',
     system: true,
@@ -69,8 +109,12 @@ export const DEFAULT_ROLES = [
   {
     key: 'editor',
     name: 'Editor',
-    description: 'Website content only.',
-    permissions: ['content.manage', 'sections.edit', 'media.upload'],
+    description: 'Website content only — no leads, no settings.',
+    permissions: [
+      ...CONTENT_KEYS.flatMap((k) => [`${k}.view`, `${k}.edit`]),
+      'sections.view', 'sections.edit',
+      'media.view', 'media.edit',
+    ],
     leadScope: 'assigned',
     system: true,
   },

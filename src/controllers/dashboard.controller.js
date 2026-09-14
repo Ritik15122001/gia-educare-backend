@@ -10,8 +10,8 @@ export const summary = asyncHandler(async (req, res) => {
   // counts are for roles that manage the site.
   const scope = leadScopeFilter(req);
   const match = (extra = {}) => (Object.keys(scope).length ? { $and: [scope, extra] } : extra);
-  const canSeeActivity = hasPermission(req.access, 'settings.manage');
-  const canSeeContent = hasPermission(req.access, 'content.manage');
+  const canSeeActivity = hasPermission(req.access, 'settings.view', 'settings.edit');
+  const canSeeContent = RESOURCES.some((r) => hasPermission(req.access, `${r.name}.view`, `${r.name}.edit`));
 
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());

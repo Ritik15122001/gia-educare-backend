@@ -28,20 +28,23 @@ RESOURCES.forEach((resource) => {
     next();
   };
 
-  sub.use(requirePermission('content.manage'));
+  // Each collection is its own module: <name>.view / .edit / .delete
+  const canView = requirePermission(`${name}.view`, `${name}.edit`);
+  const canEdit = requirePermission(`${name}.edit`);
+  const canDelete = requirePermission(`${name}.delete`);
 
   sub.route('/')
-    .get(validate(listQuerySchema, 'query'), ctrl.list)
-    .post(prepare, validate(schema), ctrl.create);
+    .get(canView, validate(listQuerySchema, 'query'), ctrl.list)
+    .post(canEdit, prepare, validate(schema), ctrl.create);
 
-  sub.patch('/reorder', validate(reorderSchema), ctrl.reorder);
+  sub.patch('/reorder', canEdit, validate(reorderSchema), ctrl.reorder);
 
   sub.route('/:id')
-    .get(validate(idParamSchema, 'params'), ctrl.get)
-    .patch(validate(idParamSchema, 'params'), prepare, validate(schema.partial()), ctrl.update)
-    .delete(validate(idParamSchema, 'params'), ctrl.remove);
+    .get(canView, validate(idParamSchema, 'params'), ctrl.get)
+    .patch(canEdit, validate(idParamSchema, 'params'), prepare, validate(schema.partial()), ctrl.update)
+    .delete(canDelete, validate(idParamSchema, 'params'), ctrl.remove);
 
-  sub.patch('/:id/publish', validate(idParamSchema, 'params'), ctrl.togglePublish);
+  sub.patch('/:id/publish', canEdit, validate(idParamSchema, 'params'), ctrl.togglePublish);
 
   router.use(`/${name}`, sub);
 });
