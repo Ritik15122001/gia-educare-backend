@@ -17,6 +17,7 @@ import { Post } from '../models/Post.js';
 import { PostCategory } from '../models/PostCategory.js';
 import { VideoTestimonial } from '../models/VideoTestimonial.js';
 import { Exam } from '../models/Exam.js';
+import { Client } from '../models/Client.js';
 
 import * as V from '../validators/content.validators.js';
 
@@ -80,6 +81,7 @@ export const RESOURCES = [
     searchable: ['name', 'fullName', 'kind', 'summary', 'usedFor'],
     beforeWrite: autoSlug('name'),
   },
+  { name: 'clients', model: Client, schema: V.clientSchema, searchable: ['name', 'country'] },
   { name: 'post-categories', model: PostCategory, schema: V.postCategorySchema, searchable: ['label', 'key'] },
   {
     name: 'video-testimonials',

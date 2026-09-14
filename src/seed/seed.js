@@ -29,6 +29,7 @@ import { Post } from '../models/Post.js';
 import { PostCategory } from '../models/PostCategory.js';
 import { VideoTestimonial } from '../models/VideoTestimonial.js';
 import { Exam } from '../models/Exam.js';
+import { Client } from '../models/Client.js';
 
 import { ensureDefaultRoles } from '../services/access.service.js';
 
@@ -69,7 +70,7 @@ async function run() {
       StudyLevel.deleteMany({}), Service.deleteMany({}), Testimonial.deleteMany({}),
       TeamMember.deleteMany({}), Milestone.deleteMany({}), Value.deleteMany({}),
       Stat.deleteMany({}), ProcessStep.deleteMany({}), Faq.deleteMany({}),
-      ComparisonRow.deleteMany({}), Section.deleteMany({}), Post.deleteMany({}), PostCategory.deleteMany({}), VideoTestimonial.deleteMany({}), Exam.deleteMany({}),
+      ComparisonRow.deleteMany({}), Section.deleteMany({}), Post.deleteMany({}), PostCategory.deleteMany({}), VideoTestimonial.deleteMany({}), Exam.deleteMany({}), Client.deleteMany({}),
     ]);
   }
 
@@ -87,6 +88,7 @@ async function run() {
   await sync(Faq, data.faqs, 'question');
   await sync(ComparisonRow, data.comparisonRows, 'country');
   await sync(Exam, data.exams, 'slug');
+  await sync(Client, data.clients, 'name');
   await sync(PostCategory, data.postCategories, 'key');
   await sync(Post, data.posts, 'slug');
   await sync(Section, data.sections, 'key');

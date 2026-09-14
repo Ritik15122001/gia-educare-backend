@@ -878,6 +878,24 @@ export const exams = [
   },
 ];
 
+// Institutions GIA Educare has worked with (home-page logo wall). Logos are
+// Wikimedia Commons files where one exists; rows without a logo render as a
+// text wordmark until an official logo is uploaded from the admin.
+export const clients = [
+  { name: "WHU – Otto Beisheim School of Management", country: 'Germany', websiteUrl: 'https://www.whu.edu', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/WHU_Logo.svg/500px-WHU_Logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "Paris School of Business", country: 'France', websiteUrl: 'https://www.psbedu.paris', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Paris_School_of_Business_%28PSB%29_logo.svg/500px-Paris_School_of_Business_%28PSB%29_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "NYU School of Professional Studies", country: 'United States', websiteUrl: 'https://www.sps.nyu.edu', logoUrl: '' },
+  { name: "KEDGE Business School", country: 'France', websiteUrl: 'https://kedge.edu', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_KEDGE_Business_School_-_Black.png/500px-Logo_KEDGE_Business_School_-_Black.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "Northeastern University", country: 'United States', websiteUrl: 'https://www.northeastern.edu', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Northeastern_Wordmark.svg/500px-Northeastern_Wordmark.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "Drexel University", country: 'United States', websiteUrl: 'https://drexel.edu', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Drexel-logo.png/500px-Drexel-logo.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "SRH University", country: 'Germany', websiteUrl: 'https://www.srh-university.de', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/SRH_Bildung.svg/500px-SRH_Bildung.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "Munich Business School", country: 'Germany', websiteUrl: 'https://www.munich-business-school.de', logoUrl: '' },
+  { name: "Clark University", country: 'United States', websiteUrl: 'https://www.clarku.edu', logoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Clark_University_wordmark.svg/500px-Clark_University_wordmark.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail' },
+  { name: "Queen's University Belfast", country: 'United Kingdom', websiteUrl: 'https://www.qub.ac.uk', logoUrl: '' },
+  { name: "University of Liverpool", country: 'United Kingdom', websiteUrl: 'https://www.liverpool.ac.uk', logoUrl: '' },
+  { name: "University College Cork", country: 'Ireland', websiteUrl: 'https://www.ucc.ie', logoUrl: '' },
+];
+
 export const offices = [
   { name: 'Gurugram · Head office', address: '4th Floor, Orion Tower, Sector 44, Gurugram 122003', phone: '+91 90000 00000', hours: 'Mon–Sat · 10am–7pm', order: 0 },
   { name: 'Bengaluru', address: '2nd Floor, Meridian Square, Indiranagar, Bengaluru 560038', phone: '+91 90000 00002', hours: 'Mon–Sat · 10am–7pm', order: 1 },
@@ -885,6 +903,7 @@ export const offices = [
 ];
 
 export const sections = [
+  { key: 'home.clients', label: 'Home — clients', eyebrow: 'Our clients', title: 'Universities we have worked with', lead: 'Business schools and universities across the US, UK, Ireland, Germany and France that trust us with their student recruitment.' },
   { key: 'exams.head', label: 'Exams — page header', title: 'Pick the test |your course actually needs.', lead: 'English tests and admission exams, compared in plain language — scores, fees in INR, validity and where each one is accepted.' },
   { key: 'exams.list', label: 'Exams — list', eyebrow: 'Exams we prepare you for', title: 'English tests and admission exams' },
   { key: 'exams.colleges', label: 'Exams — find colleges by exam', eyebrow: 'Find colleges by exam', title: 'Where your score can take you', lead: 'Indicative scores most programs ask for. Share your score and a counsellor will send universities that match it.' },

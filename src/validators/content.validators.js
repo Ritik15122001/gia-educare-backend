@@ -177,6 +177,21 @@ export const examSchema = z.object({
   ...contentBase,
 });
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((v) => !v || /^(https?:\/\/|\/)/i.test(v), 'Use a full https:// link')
+  .optional();
+
+export const clientSchema = z.object({
+  name: z.string().trim().min(2, 'Institution name is required').max(120),
+  logoUrl: optionalUrl,
+  websiteUrl: optionalUrl,
+  country: z.string().trim().max(60).optional(),
+  ...contentBase,
+});
+
 export const postCategorySchema = z.object({
   key: z
     .string()

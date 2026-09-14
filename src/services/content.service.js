@@ -15,6 +15,7 @@ import { Post } from '../models/Post.js';
 import { PostCategory } from '../models/PostCategory.js';
 import { VideoTestimonial } from '../models/VideoTestimonial.js';
 import { Exam } from '../models/Exam.js';
+import { Client } from '../models/Client.js';
 import { Section } from '../models/Section.js';
 import { SiteSetting } from '../models/SiteSetting.js';
 
@@ -44,6 +45,7 @@ export async function getSiteContent() {
     postCategories,
     videoTestimonials,
     exams,
+    clients,
   ] = await Promise.all([
     SiteSetting.getSingleton(),
     Section.find().sort('key'),
@@ -64,6 +66,7 @@ export async function getSiteContent() {
     PostCategory.findPublished(),
     VideoTestimonial.findPublished(),
     Exam.findPublished(),
+    Client.findPublished(),
   ]);
 
   // Sections are keyed for O(1) lookup on the frontend.
@@ -98,5 +101,6 @@ export async function getSiteContent() {
     postCategories,
     videoTestimonials,
     exams,
+    clients,
   };
 }
