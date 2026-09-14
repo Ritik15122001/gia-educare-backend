@@ -65,7 +65,3 @@ export const settingsSchema = z.object({
     })
     .optional(),
 });
-
-export const testEmailSchema = z.object({
-  to: z.string().trim().email('Enter a valid email address'),
-});

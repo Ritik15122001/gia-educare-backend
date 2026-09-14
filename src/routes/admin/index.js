@@ -2,6 +2,7 @@ import { Router } from 'express';
 import contentRoutes from './content.routes.js';
 import enquiryRoutes from './enquiry.routes.js';
 import * as settingsCtrl from '../../controllers/settings.controller.js';
+import * as emailCtrl from '../../controllers/email.controller.js';
 import * as sectionCtrl from '../../controllers/section.controller.js';
 import * as userCtrl from '../../controllers/user.controller.js';
 import * as roleCtrl from '../../controllers/role.controller.js';
@@ -10,7 +11,8 @@ import * as uploadCtrl from '../../controllers/upload.controller.js';
 import { requireAuth, canManageUsers, requirePermission } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
 import { idParamSchema, listQuerySchema } from '../../validators/common.validators.js';
-import { settingsSchema, testEmailSchema } from '../../validators/settings.validators.js';
+import { settingsSchema } from '../../validators/settings.validators.js';
+import { emailConfigSchema, smtpVerifySchema, testEmailSchema } from '../../validators/email.validators.js';
 import { sectionSchema } from '../../validators/content.validators.js';
 import { userCreateSchema, userUpdateSchema, roleSchema, roleUpdateSchema } from '../../validators/auth.validators.js';
 
@@ -37,8 +39,14 @@ router.delete('/sections/:id', requirePermission('sections.delete'), validate(id
 // Site settings
 router.get('/settings', settingsCtrl.get);
 router.patch('/settings', requirePermission('settings.manage'), validate(settingsSchema), settingsCtrl.update);
-router.get('/settings/email', requirePermission('settings.manage'), settingsCtrl.getEmailStatus);
-router.post('/settings/email/test', requirePermission('settings.manage'), validate(testEmailSchema), settingsCtrl.sendTestEmail);
+// Email & SMTP — credentials, lead notification switches, delivery log, previews
+const canManageEmail = requirePermission('settings.manage');
+router.get('/settings/email', canManageEmail, emailCtrl.get);
+router.put('/settings/email', canManageEmail, validate(emailConfigSchema), emailCtrl.update);
+router.post('/settings/email/verify', canManageEmail, validate(smtpVerifySchema), emailCtrl.verify);
+router.post('/settings/email/test', canManageEmail, validate(testEmailSchema), emailCtrl.sendTest);
+router.get('/settings/email/logs', canManageEmail, emailCtrl.logs);
+router.get('/settings/email/preview/:template', canManageEmail, emailCtrl.preview);
 
 // Media library — image fields on content, sections and settings upload through here too.
 const canUseMedia = requirePermission('media.upload', 'content.manage', 'sections.edit', 'settings.manage');

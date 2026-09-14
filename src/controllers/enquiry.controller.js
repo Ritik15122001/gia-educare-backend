@@ -7,8 +7,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { parseListQuery, buildMeta } from '../utils/pagination.js';
 import { recordAudit } from '../models/AuditLog.js';
 import { logger } from '../config/logger.js';
-import { SiteSetting } from '../models/SiteSetting.js';
-import { queueEmail, enquiryAlertEmail, enquiryConfirmationEmail } from '../services/email.service.js';
+import { queueLeadNotifications } from '../services/email.service.js';
 import { leadScopeFilter, hasPermission, sortRoles } from '../services/access.service.js';
 import { SUPER_ADMIN } from '../lib/permissions.js';
 
@@ -27,13 +26,9 @@ export const submit = asyncHandler(async (req, res) => {
 
   logger.info(`New enquiry from ${enquiry.email} (${enquiry.destination || 'no destination'})`);
 
-  // Notifications go out after the response; a mail failure never fails the lead.
-  SiteSetting.getSingleton()
-    .then((settings) => {
-      queueEmail(enquiryAlertEmail(enquiry, settings));
-      queueEmail(enquiryConfirmationEmail(enquiry, settings));
-    })
-    .catch((err) => logger.error(`Could not load settings for enquiry emails: ${err.message}`));
+  // Team alert + student confirmation go out after the response, per the
+  // switches in Admin → Email & SMTP. A mail failure never fails the lead.
+  queueLeadNotifications(enquiry);
 
   // Only echo back what the success screen needs — never the whole record.
   return created(res, {

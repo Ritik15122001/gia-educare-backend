@@ -32,7 +32,7 @@ export const create = asyncHandler(async (req, res) => {
   const user = await User.create(req.body);
   await recordAudit({ req, action: 'create', resource: 'users', resourceId: user.id, summary: `Created user ${user.email}` });
   const settings = await SiteSetting.getSingleton().catch(() => null);
-  queueEmail(accountCreatedEmail(user, req.user?.name, settings?.brand));
+  queueEmail(accountCreatedEmail(user, req.user?.name, settings), { type: 'account-created' });
   return created(res, user);
 });
 

@@ -39,6 +39,10 @@ const schema = z.object({
 
   // Signs captcha tokens. Falls back to JWT_ACCESS_SECRET when unset.
   CAPTCHA_SECRET: z.string().default(''),
+
+  // Encrypts secrets saved from the admin panel (the SMTP password).
+  // Optional — falls back to JWT_ACCESS_SECRET. Changing it means re-entering them.
+  SETTINGS_SECRET: z.string().default(''),
 });
 
 const parsed = schema.safeParse(process.env);
