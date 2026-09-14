@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ok } from '../utils/apiResponse.js';
 import { recordAudit } from '../models/AuditLog.js';
+import { sessionUser } from '../services/access.service.js';
 import {
   signAccessToken,
   signRefreshToken,
@@ -35,7 +36,7 @@ export const login = asyncHandler(async (req, res) => {
   const accessToken = await issueTokens(user, res);
   await recordAudit({ req: { user }, action: 'login', resource: 'auth', summary: `${user.email} signed in` });
 
-  return ok(res, { accessToken, user: user.toJSON() });
+  return ok(res, { accessToken, user: await sessionUser(user) });
 });
 
 export const refresh = asyncHandler(async (req, res) => {
@@ -59,7 +60,7 @@ export const refresh = asyncHandler(async (req, res) => {
   }
 
   const accessToken = await issueTokens(user, res);
-  return ok(res, { accessToken, user: user.toJSON() });
+  return ok(res, { accessToken, user: await sessionUser(user) });
 });
 
 export const logout = asyncHandler(async (req, res) => {
@@ -76,7 +77,7 @@ export const logout = asyncHandler(async (req, res) => {
   return ok(res, { message: 'Signed out' });
 });
 
-export const me = asyncHandler(async (req, res) => ok(res, req.user.toJSON()));
+export const me = asyncHandler(async (req, res) => ok(res, await sessionUser(req.user, req.access)));
 
 export const updateProfile = asyncHandler(async (req, res) => {
   const { name, email } = req.body;
@@ -86,7 +87,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
   req.user.name = name;
   req.user.email = email;
   await req.user.save();
-  return ok(res, req.user.toJSON());
+  return ok(res, await sessionUser(req.user, req.access));
 });
 
 export const changePassword = asyncHandler(async (req, res) => {

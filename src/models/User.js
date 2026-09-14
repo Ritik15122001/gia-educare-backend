@@ -2,8 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { toJSONPlugin } from './plugins.js';
 
-export const ROLES = ['super_admin', 'admin', 'editor'];
-
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: [true, 'Name is required'], trim: true, maxlength: 120 },
@@ -16,7 +14,8 @@ const userSchema = new mongoose.Schema(
       match: [/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i, 'Enter a valid email'],
     },
     password: { type: String, required: true, minlength: 8, select: false, private: true },
-    role: { type: String, enum: ROLES, default: 'editor', index: true },
+    // A Role `key` (see models/Role.js). Validated against the roles collection by the controller.
+    role: { type: String, default: 'editor', trim: true, index: true },
     active: { type: Boolean, default: true },
     lastLoginAt: { type: Date },
     refreshTokenHash: { type: String, select: false, private: true },

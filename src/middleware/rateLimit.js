@@ -20,3 +20,11 @@ export const enquiryLimiter = rateLimit({
   limit: 20,
   message: { success: false, message: 'Too many enquiries from this address. Please try again later.' },
 });
+
+// Each form view fetches one captcha, and a wrong answer fetches another.
+export const captchaLimiter = rateLimit({
+  ...base,
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  message: { success: false, message: 'Too many security checks requested. Please wait a few minutes.' },
+});

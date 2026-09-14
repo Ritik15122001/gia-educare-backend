@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { RESOURCES } from '../../lib/resourceRegistry.js';
 import { createCrudController } from '../../controllers/crud.factory.js';
 import { validate } from '../../middleware/validate.js';
-import { canWriteContent } from '../../middleware/auth.js';
+import { requirePermission } from '../../middleware/auth.js';
 import { idParamSchema, reorderSchema, listQuerySchema } from '../../validators/common.validators.js';
 
 const router = Router();
@@ -22,11 +22,13 @@ RESOURCES.forEach((resource) => {
 
   // Derive slugs and other computed fields before validation runs.
   const prepare = (req, _res, next) => {
-    if (beforeWrite && req.body && typeof req.body === 'object') req.body = beforeWrite(req.body);
+    if (beforeWrite && req.body && typeof req.body === 'object') {
+      req.body = beforeWrite(req.body, { isCreate: req.method === 'POST' });
+    }
     next();
   };
 
-  sub.use(canWriteContent);
+  sub.use(requirePermission('content.manage'));
 
   sub.route('/')
     .get(validate(listQuerySchema, 'query'), ctrl.list)

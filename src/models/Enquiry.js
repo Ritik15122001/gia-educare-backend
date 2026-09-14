@@ -3,6 +3,10 @@ import { toJSONPlugin } from './plugins.js';
 
 export const ENQUIRY_STATUSES = ['new', 'contacted', 'qualified', 'converted', 'closed'];
 
+// Total budget for the whole program, in INR. Shared with the validator and
+// mirrored by the website's form options — keep all three identical.
+export const BUDGET_RANGES = ['Up to ₹10 Lakh', '₹10 – 20 Lakh', '₹20 – 30 Lakh', '₹30 – 50 Lakh', 'Above ₹50 Lakh'];
+
 const noteSchema = new mongoose.Schema(
   {
     body: { type: String, required: true, trim: true, maxlength: 2000 },
@@ -31,11 +35,25 @@ const enquirySchema = new mongoose.Schema(
     intake: { type: String, default: '', trim: true },
     test: { type: String, default: '', trim: true },
     qual: { type: String, default: '', trim: true },
+    budget: { type: String, enum: [...BUDGET_RANGES, ''], default: '', index: true },
     message: { type: String, default: '', trim: true, maxlength: 2000 },
     consent: { type: Boolean, required: true },
 
+    // Referral attribution: a code/name the student typed or that arrived on a
+    // ?ref= link, plus the campaign parameters of the visit that converted.
+    referral: { type: String, default: '', trim: true, maxlength: 120, index: true },
+    utmSource: { type: String, default: '', trim: true, maxlength: 120 },
+    utmMedium: { type: String, default: '', trim: true, maxlength: 120 },
+    utmCampaign: { type: String, default: '', trim: true, maxlength: 120 },
+    referrerUrl: { type: String, default: '', trim: true, maxlength: 500 },
+    landingPage: { type: String, default: '', trim: true, maxlength: 300 },
+
     status: { type: String, enum: ENQUIRY_STATUSES, default: 'new', index: true },
-    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    // Assignment: a role (all its members see the lead) plus, optionally, one member of it.
+    assignedRole: { type: String, default: '', trim: true, index: true },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    assignedAt: { type: Date, default: null },
     notes: { type: [noteSchema], default: [] },
 
     // Where the lead came from, for attribution.

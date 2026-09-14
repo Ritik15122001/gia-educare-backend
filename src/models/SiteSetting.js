@@ -46,6 +46,23 @@ const siteSettingSchema = new mongoose.Schema(
       },
     },
     notifyEnquiriesTo: { type: String, default: '' },
+
+    // "Founder connect" — a personal note plus every channel to reach them.
+    founder: {
+      enabled: { type: Boolean, default: true },
+      name: { type: String, default: '', trim: true },
+      title: { type: String, default: '', trim: true },
+      photoUrl: { type: String, default: '', trim: true },
+      message: { type: String, default: '', trim: true },
+      email: { type: String, default: '', trim: true },
+      phone: { type: String, default: '', trim: true },
+      whatsapp: { type: String, default: '', trim: true },
+      linkedin: { type: String, default: '', trim: true },
+      instagram: { type: String, default: '', trim: true },
+      youtube: { type: String, default: '', trim: true },
+      twitter: { type: String, default: '', trim: true },
+      facebook: { type: String, default: '', trim: true },
+    },
   },
   { timestamps: true },
 );

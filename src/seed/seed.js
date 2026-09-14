@@ -25,6 +25,11 @@ import { Stat } from '../models/Stat.js';
 import { ProcessStep } from '../models/ProcessStep.js';
 import { Faq } from '../models/Faq.js';
 import { ComparisonRow } from '../models/ComparisonRow.js';
+import { Post } from '../models/Post.js';
+import { PostCategory } from '../models/PostCategory.js';
+import { VideoTestimonial } from '../models/VideoTestimonial.js';
+
+import { ensureDefaultRoles } from '../services/access.service.js';
 
 import * as data from './data.js';
 
@@ -63,7 +68,7 @@ async function run() {
       StudyLevel.deleteMany({}), Service.deleteMany({}), Testimonial.deleteMany({}),
       TeamMember.deleteMany({}), Milestone.deleteMany({}), Value.deleteMany({}),
       Stat.deleteMany({}), ProcessStep.deleteMany({}), Faq.deleteMany({}),
-      ComparisonRow.deleteMany({}), Section.deleteMany({}),
+      ComparisonRow.deleteMany({}), Section.deleteMany({}), Post.deleteMany({}), PostCategory.deleteMany({}), VideoTestimonial.deleteMany({}),
     ]);
   }
 
@@ -80,15 +85,24 @@ async function run() {
   await sync(ProcessStep, data.processSteps, 'num');
   await sync(Faq, data.faqs, 'question');
   await sync(ComparisonRow, data.comparisonRows, 'country');
+  await sync(PostCategory, data.postCategories, 'key');
+  await sync(Post, data.posts, 'slug');
   await sync(Section, data.sections, 'key');
 
   // Site settings singleton — only fill offices on first creation.
   const settings = await SiteSetting.getSingleton();
+  if (!settings.founder?.name) {
+    settings.founder = data.founder;
+    await settings.save();
+    logger.info('SiteSetting     founder seeded');
+  }
   if (!settings.offices?.length) {
     settings.offices = data.offices;
     await settings.save();
     logger.info('SiteSetting     offices seeded');
   }
+
+  await ensureDefaultRoles();
 
   // Super admin
   const existingAdmin = await User.findOne({ email: env.SEED_ADMIN_EMAIL });

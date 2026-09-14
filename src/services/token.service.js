@@ -30,10 +30,14 @@ export const compareToken = (token, hash) => bcrypt.compare(token, hash);
 // Refresh token lives in an httpOnly cookie so page JS can never read it.
 export const REFRESH_COOKIE = 'gia_refresh';
 
+// SameSite=None + Secure is required whenever the admin panel and this API are
+// on different domains — otherwise the browser drops the cookie and every
+// refresh (page reload, token expiry) fails. Both are env-driven so a
+// same-origin deployment can tighten them back to `lax`/`strict`.
 export const refreshCookieOptions = {
   httpOnly: true,
-  secure: env.isProd,
-  sameSite: env.isProd ? 'strict' : 'lax',
+  secure: env.cookieSecure,
+  sameSite: env.cookieSameSite,
   path: '/api/v1/auth',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

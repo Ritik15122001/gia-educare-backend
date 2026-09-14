@@ -13,11 +13,17 @@ import { Stat } from '../models/Stat.js';
 import { ProcessStep } from '../models/ProcessStep.js';
 import { Faq } from '../models/Faq.js';
 import { ComparisonRow } from '../models/ComparisonRow.js';
+import { Post } from '../models/Post.js';
+import { PostCategory } from '../models/PostCategory.js';
+import { VideoTestimonial } from '../models/VideoTestimonial.js';
 
 import * as V from '../validators/content.validators.js';
 
-const autoSlug = (field) => (body) => {
-  if (!body.slug && body[field]) body.slug = slugify(body[field], { lower: true, strict: true });
+// Derives a slug from the title on create only. Slugs are URLs (/blog/:slug,
+// /destinations/:slug) and the seed's upsert key, so renaming a record must not
+// silently change them — that is how edited rows used to come back duplicated.
+const autoSlug = (field) => (body, { isCreate }) => {
+  if (isCreate && !body.slug && body[field]) body.slug = slugify(body[field], { lower: true, strict: true });
   return body;
 };
 
@@ -59,6 +65,20 @@ export const RESOURCES = [
   { name: 'process-steps', model: ProcessStep, schema: V.processStepSchema, searchable: ['title', 'description'] },
   { name: 'faqs', model: Faq, schema: V.faqSchema, searchable: ['question', 'answer'] },
   { name: 'comparison-rows', model: ComparisonRow, schema: V.comparisonRowSchema, searchable: ['country', 'best'] },
+  {
+    name: 'posts',
+    model: Post,
+    schema: V.postSchema,
+    searchable: ['title', 'excerpt', 'body', 'author', 'tags', 'category', 'destination'],
+    beforeWrite: autoSlug('title'),
+  },
+  { name: 'post-categories', model: PostCategory, schema: V.postCategorySchema, searchable: ['label', 'key'] },
+  {
+    name: 'video-testimonials',
+    model: VideoTestimonial,
+    schema: V.videoTestimonialSchema,
+    searchable: ['name', 'program', 'university', 'country', 'quote'],
+  },
 ];
 
 export const getResource = (name) => RESOURCES.find((r) => r.name === name);

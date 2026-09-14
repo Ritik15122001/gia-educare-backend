@@ -27,4 +27,9 @@ export const listQuerySchema = z.object({
   status: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
+  budget: z.string().optional(),
+  referral: z.string().optional(),
+  destination: z.string().optional(),
+  assignedTo: z.string().optional(), // 'me' | 'none' | user id
+  assignedRole: z.string().optional(),
 });

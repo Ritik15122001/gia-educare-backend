@@ -2,9 +2,12 @@ import { createApp } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectDb, disconnectDb } from './config/db.js';
+import { ensureDefaultRoles } from './services/access.service.js';
 
 async function start() {
   await connectDb();
+  // Roles are data now; make sure the built-in ones exist on a fresh or pre-RBAC database.
+  await ensureDefaultRoles();
 
   const app = createApp();
   const server = app.listen(env.PORT, () => {

@@ -86,6 +86,13 @@ export const teamMemberSchema = z.object({
   bio: z.string().trim().max(600).optional(),
   photoUrl: z.string().trim().max(500).optional(),
   linkedin: z.string().trim().max(300).optional(),
+  featured: z.boolean().optional(),
+  specialisation: z.string().trim().max(120).optional(),
+  experienceYears: z.coerce.number().int().min(0).max(60).optional(),
+  studentsCounselled: z.coerce.number().int().min(0).optional(),
+  languages: z.array(z.string().trim().max(30)).max(8).optional(),
+  phone: z.string().trim().max(30).optional(),
+  whatsapp: z.string().trim().max(30).optional(),
   ...contentBase,
 });
 
@@ -130,6 +137,57 @@ export const comparisonRowSchema = z.object({
   living: z.string().trim().max(60).optional(),
   work: z.string().trim().max(60).optional(),
   best: z.string().trim().max(120).optional(),
+  ...contentBase,
+});
+
+export const postSchema = z.object({
+  slug,
+  title: z.string().trim().min(3, 'Title is required').max(200),
+  // Both are rendered verbatim on the site — a blank excerpt leaves an empty
+  // card and a blank body an empty article, so require real copy rather than
+  // relying on the admin form alone. Use the published toggle for drafts.
+  excerpt: z.string().trim().min(20, 'Excerpt is too short').max(400),
+  body: z.string().trim().min(50, 'Article body is too short').max(40000),
+  coverUrl: z.string().trim().max(500).optional(),
+  author: z.string().trim().max(120).optional(),
+  tags: z.array(z.string().trim().max(40)).max(10).optional(),
+  category: z.string().trim().max(60).regex(/^[a-z0-9-]*$/, 'Pick a category').optional(),
+  destination: z.string().trim().max(80).regex(/^[a-z0-9-]*$/, 'Pick a country').optional(),
+  // Accepts the <input type="date"> value the admin sends, or a full ISO string.
+  publishedAt: z.coerce.date().optional(),
+  ...contentBase,
+});
+
+export const postCategorySchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and dashes'),
+  label: z.string().trim().min(2).max(60),
+  description: z.string().trim().max(300).optional(),
+  showInNav: z.boolean().optional(),
+  ...contentBase,
+});
+
+const videoUrl = z
+  .string()
+  .trim()
+  .min(1, 'Video link is required')
+  .max(500)
+  .refine(
+    (v) => /(youtube(-nocookie)?\.com|youtu\.be)\//i.test(v) || /^https?:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(v),
+    'Paste a YouTube link or a direct .mp4 / .webm file URL',
+  );
+
+export const videoTestimonialSchema = z.object({
+  name: z.string().trim().min(2, 'Student name is required').max(120),
+  program: z.string().trim().max(120).optional(),
+  university: z.string().trim().max(120).optional(),
+  country: z.string().trim().max(60).optional(),
+  videoUrl,
+  thumbnailUrl: z.string().trim().max(500).optional(),
+  quote: z.string().trim().max(300).optional(),
   ...contentBase,
 });
 

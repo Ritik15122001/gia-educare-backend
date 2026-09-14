@@ -9,6 +9,15 @@ const teamMemberSchema = new mongoose.Schema(
     bio: { type: String, default: '', trim: true, maxlength: 600 },
     photoUrl: { type: String, default: '', trim: true },
     linkedin: { type: String, default: '', trim: true },
+
+    // Counsellor profile — shown in the "Top counsellors" carousel when featured.
+    featured: { type: Boolean, default: false, index: true },
+    specialisation: { type: String, default: '', trim: true, maxlength: 120 },
+    experienceYears: { type: Number, default: 0, min: 0, max: 60 },
+    studentsCounselled: { type: Number, default: 0, min: 0 },
+    languages: { type: [String], default: [] },
+    phone: { type: String, default: '', trim: true },
+    whatsapp: { type: String, default: '', trim: true },
   },
   { timestamps: true },
 );

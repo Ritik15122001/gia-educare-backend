@@ -2,6 +2,8 @@ import { User } from '../models/User.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { verifyAccessToken } from '../services/token.service.js';
+import { resolveAccess, hasPermission } from '../services/access.service.js';
+import { SUPER_ADMIN } from '../lib/permissions.js';
 
 export const requireAuth = asyncHandler(async (req, _res, next) => {
   const header = req.headers.authorization || '';
@@ -19,18 +21,23 @@ export const requireAuth = asyncHandler(async (req, _res, next) => {
   if (!user || !user.active) throw ApiError.unauthorized('Account is no longer active');
 
   req.user = user;
+  req.access = await resolveAccess(user);
   return next();
 });
 
-// Usage: requireRole('super_admin', 'admin')
-export const requireRole = (...roles) => (req, _res, next) => {
+// Passes if the user's role grants ANY of the listed permissions.
+// Usage: requirePermission('leads.edit', 'leads.assign')
+export const requirePermission = (...perms) => (req, _res, next) => {
   if (!req.user) return next(ApiError.unauthorized());
-  if (!roles.includes(req.user.role)) {
+  if (!hasPermission(req.access, ...perms)) {
     return next(ApiError.forbidden('Your role does not allow this action'));
   }
   return next();
 };
 
-// Editors can manage content but not users or destructive settings.
-export const canWriteContent = requireRole('super_admin', 'admin', 'editor');
-export const canManageUsers = requireRole('super_admin');
+// Team accounts and roles are never grantable, so no role can raise its own access.
+export const canManageUsers = (req, _res, next) => {
+  if (!req.user) return next(ApiError.unauthorized());
+  if (req.user.role !== SUPER_ADMIN) return next(ApiError.forbidden('Only a super admin can do this'));
+  return next();
+};

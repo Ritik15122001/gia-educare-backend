@@ -37,5 +37,35 @@ export const settingsSchema = z.object({
       description: z.string().trim().max(320).optional(),
     })
     .optional(),
-  notifyEnquiriesTo: z.string().trim().email().or(z.literal('')).optional(),
+  // Comma-separated so a lead alert can reach more than one inbox.
+  notifyEnquiriesTo: z
+    .string()
+    .trim()
+    .max(500)
+    .refine(
+      (v) => !v || v.split(',').every((e) => z.string().email().safeParse(e.trim()).success),
+      'Use valid email addresses, separated by commas',
+    )
+    .optional(),
+  founder: z
+    .object({
+      enabled: z.boolean().optional(),
+      name: z.string().trim().max(120).optional(),
+      title: z.string().trim().max(120).optional(),
+      photoUrl: z.string().trim().max(500).optional(),
+      message: z.string().trim().max(1200).optional(),
+      email: z.string().trim().email().or(z.literal('')).optional(),
+      phone: z.string().trim().max(30).optional(),
+      whatsapp: z.string().trim().max(30).optional(),
+      linkedin: z.string().trim().max(300).optional(),
+      instagram: z.string().trim().max(300).optional(),
+      youtube: z.string().trim().max(300).optional(),
+      twitter: z.string().trim().max(300).optional(),
+      facebook: z.string().trim().max(300).optional(),
+    })
+    .optional(),
+});
+
+export const testEmailSchema = z.object({
+  to: z.string().trim().email('Enter a valid email address'),
 });

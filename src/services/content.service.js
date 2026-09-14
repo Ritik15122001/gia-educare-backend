@@ -11,6 +11,9 @@ import { Stat } from '../models/Stat.js';
 import { ProcessStep } from '../models/ProcessStep.js';
 import { Faq } from '../models/Faq.js';
 import { ComparisonRow } from '../models/ComparisonRow.js';
+import { Post } from '../models/Post.js';
+import { PostCategory } from '../models/PostCategory.js';
+import { VideoTestimonial } from '../models/VideoTestimonial.js';
 import { Section } from '../models/Section.js';
 import { SiteSetting } from '../models/SiteSetting.js';
 
@@ -36,6 +39,9 @@ export async function getSiteContent() {
     processSteps,
     faqs,
     comparisonRows,
+    posts,
+    postCategories,
+    videoTestimonials,
   ] = await Promise.all([
     SiteSetting.getSingleton(),
     Section.find().sort('key'),
@@ -52,6 +58,9 @@ export async function getSiteContent() {
     ProcessStep.findPublished(),
     Faq.findPublished(),
     ComparisonRow.findPublished(),
+    Post.findPublished(),
+    PostCategory.findPublished(),
+    VideoTestimonial.findPublished(),
   ]);
 
   // Sections are keyed for O(1) lookup on the frontend.
@@ -72,11 +81,18 @@ export async function getSiteContent() {
     services,
     testimonials,
     team,
+    // The home carousel shows featured counsellors, in the order they were dragged.
+    counsellors: team.filter((m) => m.featured),
     milestones,
     values,
     stats,
     processSteps,
     faqs,
     comparisonRows,
+    posts,
+    // The home page teases only the three most recent, mirroring destinationsHome.
+    postsRecent: posts.slice(0, 3),
+    postCategories,
+    videoTestimonials,
   };
 }
