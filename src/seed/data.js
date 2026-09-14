@@ -630,6 +630,107 @@ Students planning to work in Canada after graduating, and those who want practic
 2. Colleges and universities differ in work-permit eligibility; confirm before applying.
 3. Show clear proof of funds for tuition and living costs.`,
   },
+  // --- Exam doubts ----------------------------------------------------------
+  {
+    slug: 'which-exam-for-which-course-and-country',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Hourglass_1.jpg/960px-Hourglass_1.jpg',
+    category: 'exam-doubts',
+    destination: '',
+    exam: '',
+    publishedAt: '2026-09-12T09:00:00.000Z',
+    title: 'Which exam to give for which course & country?',
+    author: 'Dev Kulkarni',
+    tags: ['Exams', 'Choosing a test'],
+    excerpt: 'Most students need two tests: one to prove their English and one for admission. Here is how to work out exactly which ones your shortlist needs.',
+    body: `Almost every student abroad needs an **English test**, and many also need an **admission test**. Which ones depends on the course and the country.
+
+## Step 1 — the English test
+
+- **IELTS** is accepted almost everywhere and is the safest default, especially for the UK, Australia, Canada, New Zealand and Ireland.
+- **TOEFL iBT** is the traditional choice for US universities.
+- **PTE Academic** is popular for Australia and New Zealand because results come back quickly.
+- **Duolingo English Test (DET)** is the cheapest and fastest, but only works if every university on your list accepts it.
+
+## Step 2 — the admission test
+
+- **MS, MA or PhD in the US** → usually the **GRE**.
+- **MBA or business masters** → the **GMAT**, or the GRE where accepted.
+- **Bachelors in the US** → the **SAT** at many universities.
+- **UK, Ireland, Australia and most of Europe** → often no admission test for masters; your degree marks carry more weight.
+
+## Step 3 — check the visa
+
+Some visas only accept specific English tests, or a specific version of one. Always confirm the visa rules as well as the university's.
+
+> Pick your universities first, then your tests — not the other way round.
+
+Fees and formats change often, so confirm on each test's official website before you book. We map the right tests to your shortlist during free counselling.`,
+  },
+  {
+    slug: 'ielts-vs-toefl-vs-pte-vs-det',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Getting_the_Most_Out_of_Multiple-choice_Questions_%286347992956%29.jpg/960px-Getting_the_Most_Out_of_Multiple-choice_Questions_%286347992956%29.jpg',
+    category: 'exam-doubts',
+    destination: '',
+    exam: '',
+    publishedAt: '2026-09-11T09:00:00.000Z',
+    title: 'IELTS v/s TOEFL v/s PTE v/s DET?',
+    author: 'Dev Kulkarni',
+    tags: ['IELTS', 'TOEFL', 'PTE', 'DET'],
+    excerpt: 'Four English tests, four different formats. The right one depends on where you are applying and how you perform best under test conditions.',
+    body: `All four tests prove your English. They differ in **format, speed, cost and where they are accepted**.
+
+## At a glance
+
+- **IELTS** — band 0 – 9, about 2 hr 45 min, speaking face to face with an examiner. Accepted almost everywhere.
+- **TOEFL iBT** — fully on computer, including recorded speaking. The traditional choice for the US.
+- **PTE Academic** — 10 – 90, about 2 hours, scored by software with results in a few days. Popular for Australia and New Zealand.
+- **DET** — 10 – 160, about 1 hour online from home, and the cheapest. Accepted by many, but not all, universities.
+
+## How to choose
+
+1. **Check your shortlist first.** If one university does not accept a test, that test is out.
+2. **Check the visa.** Some student visas accept only certain tests.
+3. **Play to your strengths.** If you speak more naturally to a person, IELTS suits you; if you prefer a computer, TOEFL or PTE may suit you better.
+4. **Consider timing.** PTE and DET results arrive fastest when a deadline is close.
+
+> The cheapest test is the one you only have to take once.
+
+Fees and formats change, so confirm on the official websites before booking.`,
+  },
+  {
+    slug: 'ielts-academic-vs-ielts-general',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/The_Hub%2C_Chancellor_Oppenheimer_Library%2C_University_of_Cape_Town.jpg/960px-The_Hub%2C_Chancellor_Oppenheimer_Library%2C_University_of_Cape_Town.jpg',
+    category: 'exam-doubts',
+    destination: '',
+    exam: 'ielts',
+    publishedAt: '2026-09-09T09:00:00.000Z',
+    title: 'IELTS academic V/s IELTS general?',
+    author: 'Sana Nair',
+    tags: ['IELTS'],
+    excerpt: 'Booking the wrong IELTS is one of the most common and costly mistakes. Here is which version you need and why.',
+    body: `There are two versions of IELTS, and universities only accept one of them.
+
+## IELTS Academic
+
+For **university admission** — bachelors, masters and PhD — and for professional registration. If you are applying to study abroad, this is almost certainly the one you need.
+
+## IELTS General Training
+
+For **work, migration** and some training or below-degree programs. Most universities will **not** accept it for admission.
+
+## What is the same, and what is different
+
+- **Listening and Speaking** are the same in both versions.
+- **Reading and Writing** are different — Academic uses academic texts and asks you to describe charts or data; General Training uses everyday texts and letter writing.
+
+## Before you book
+
+1. Check your university's English requirement page.
+2. Check whether your visa needs a specific version, such as **IELTS for UKVI**.
+3. Book the matching test — scores cannot be converted between versions.
+
+> When in doubt for studying abroad, the answer is IELTS Academic.`,
+  },
 ];
 
 export const posts = [...launchPosts, ...morePosts];
@@ -639,6 +740,7 @@ export const postCategories = [
   { key: 'finances', label: 'Finances', description: 'Costs, education loans, scholarships and money abroad.', showInNav: true },
   { key: 'country-guides', label: 'Country Guides', description: 'What studying in a specific country actually involves.' },
   { key: 'applications', label: 'Applications', description: 'SOPs, LORs, deadlines and getting the admit.' },
+  { key: 'exam-doubts', label: 'Exam Doubts', description: 'Which test to take, how they compare and what score you need.' },
 ];
 
 // "Founder connect" on the home and about pages. Placeholder profile — replace
@@ -659,6 +761,123 @@ export const founder = {
   facebook: '',
 };
 
+// Seven exams students ask about most. Fees are approximate INR for Indian test
+// takers and change often — every exam links to its official site.
+export const exams = [
+  {
+    slug: 'ielts', name: 'IELTS', fullName: 'International English Language Testing System', kind: 'English proficiency',
+    summary: 'The most widely accepted English test for the UK, Australia, Canada, New Zealand and Ireland.',
+    description: 'IELTS tests listening, reading, writing and speaking. Choose IELTS Academic for university admission; General Training is for work and migration. The speaking test is a face-to-face conversation with an examiner, which many students find more natural than speaking to a computer.',
+    typicalScore: '6.5 overall, no band below 6.0, for most masters',
+    usedFor: 'Bachelors, masters and student visas',
+    acceptedIn: ['United Kingdom', 'Australia', 'Canada', 'New Zealand', 'Ireland', 'United States'],
+    facts: [
+      { label: 'Score scale', value: 'Band 0 – 9' },
+      { label: 'Test duration', value: 'About 2 hr 45 min' },
+      { label: 'Test fee (India)', value: 'Approx. ₹18,000' },
+      { label: 'Score validity', value: '2 years' },
+      { label: 'Format', value: 'Paper or computer, at a test centre' },
+    ],
+    officialUrl: 'https://ielts.org',
+  },
+  {
+    slug: 'toefl', name: 'TOEFL', fullName: 'Test of English as a Foreign Language (TOEFL iBT)', kind: 'English proficiency',
+    summary: 'A computer-based English test accepted by almost every US university and many worldwide.',
+    description: 'TOEFL iBT is taken entirely on computer, including a recorded speaking section. It is the traditional choice for US admissions and is accepted by most universities in Canada, the UK and Europe. ETS has been updating the test format and score scale, so check the current version before you book.',
+    typicalScore: 'Around 90+ (0 – 120 scale) for most masters',
+    usedFor: 'Bachelors and masters, especially in the US',
+    acceptedIn: ['United States', 'Canada', 'United Kingdom', 'Australia', 'Ireland', 'Germany'],
+    facts: [
+      { label: 'Score scale', value: 'New 1 – 6 bands, with a 0 – 120 equivalent' },
+      { label: 'Test duration', value: 'About 1.5 – 2 hours' },
+      { label: 'Test fee (India)', value: 'Approx. ₹17,000 – 20,000' },
+      { label: 'Score validity', value: '2 years' },
+      { label: 'Format', value: 'Computer, at a test centre or at home' },
+    ],
+    officialUrl: 'https://www.ets.org/toefl.html',
+  },
+  {
+    slug: 'det', name: 'DET', fullName: 'Duolingo English Test', kind: 'English proficiency',
+    summary: 'An online, adaptive English test you take from home in about an hour.',
+    description: 'The Duolingo English Test is the fastest and cheapest option and is accepted by many universities in the US, Canada, the UK and Ireland. It is not accepted for every student visa or every university, so confirm your shortlist accepts it before you rely on it.',
+    typicalScore: 'Around 115 – 125 for most masters',
+    usedFor: 'Admissions at universities that list it',
+    acceptedIn: ['United States', 'Canada', 'United Kingdom', 'Ireland'],
+    facts: [
+      { label: 'Score scale', value: '10 – 160' },
+      { label: 'Test duration', value: 'About 1 hour' },
+      { label: 'Test fee (India)', value: 'Approx. ₹6,000 – 7,000' },
+      { label: 'Score validity', value: '2 years' },
+      { label: 'Format', value: 'Online, at home' },
+    ],
+    officialUrl: 'https://englishtest.duolingo.com',
+  },
+  {
+    slug: 'pte', name: 'PTE', fullName: 'Pearson Test of English Academic', kind: 'English proficiency',
+    summary: 'A computer-based, AI-scored English test with fast results — popular for Australia and New Zealand.',
+    description: 'PTE Academic is taken on computer and scored by software, with results usually within a few days. It is widely used for Australia and New Zealand and accepted by many universities in the UK, Canada and Ireland.',
+    typicalScore: 'Around 58 – 65 for most masters',
+    usedFor: 'Bachelors, masters and student visas',
+    acceptedIn: ['Australia', 'New Zealand', 'United Kingdom', 'Canada', 'Ireland', 'United States'],
+    facts: [
+      { label: 'Score scale', value: '10 – 90' },
+      { label: 'Test duration', value: 'About 2 hours' },
+      { label: 'Test fee (India)', value: 'Approx. ₹18,000' },
+      { label: 'Score validity', value: '2 years' },
+      { label: 'Format', value: 'Computer, at a test centre' },
+    ],
+    officialUrl: 'https://www.pearsonpte.com',
+  },
+  {
+    slug: 'gre', name: 'GRE', fullName: 'Graduate Record Examinations (GRE General Test)', kind: 'Graduate admission',
+    summary: 'The standard admission test for masters and PhD programs, especially in the United States.',
+    description: 'The GRE measures verbal reasoning, quantitative reasoning and analytical writing. Most US MS and PhD programs ask for it, and a strong score can offset a weaker GPA. Many business schools accept it as an alternative to the GMAT.',
+    typicalScore: '310 – 320+ for competitive MS programs',
+    usedFor: 'MS, MA and PhD programs; some MBAs',
+    acceptedIn: ['United States', 'Canada', 'Germany', 'United Kingdom', 'Australia', 'Ireland'],
+    facts: [
+      { label: 'Score scale', value: '260 – 340, plus writing 0 – 6' },
+      { label: 'Test duration', value: 'About 2 hours' },
+      { label: 'Test fee (India)', value: 'Approx. ₹22,000 – 24,000' },
+      { label: 'Score validity', value: '5 years' },
+      { label: 'Format', value: 'Computer, at a test centre or at home' },
+    ],
+    officialUrl: 'https://www.ets.org/gre.html',
+  },
+  {
+    slug: 'gmat', name: 'GMAT', fullName: 'Graduate Management Admission Test (GMAT Focus Edition)', kind: 'Graduate admission',
+    summary: 'The admission test most business schools ask for — MBA, Masters in Finance and Masters in Management.',
+    description: 'The GMAT Focus Edition tests quantitative reasoning, verbal reasoning and data insights. It is the default test for MBA and business masters programs worldwide, though many schools also accept the GRE.',
+    typicalScore: 'Around 600 – 650+ for most business masters',
+    usedFor: 'MBA and business masters',
+    acceptedIn: ['United States', 'United Kingdom', 'Canada', 'Ireland', 'Australia', 'Dubai & Singapore'],
+    facts: [
+      { label: 'Score scale', value: '205 – 805' },
+      { label: 'Test duration', value: '2 hr 15 min' },
+      { label: 'Test fee (India)', value: 'Approx. ₹25,000 – 28,000' },
+      { label: 'Score validity', value: '5 years' },
+      { label: 'Format', value: 'Computer, at a test centre or online' },
+    ],
+    officialUrl: 'https://www.mba.com/exams/gmat-exam',
+  },
+  {
+    slug: 'sat', name: 'SAT', fullName: 'SAT', kind: 'Undergraduate admission',
+    summary: 'The admission test many US universities use for bachelors applicants.',
+    description: 'The digital SAT covers reading and writing plus maths. It is mainly used for US bachelors admissions, and some universities in other countries accept it for international students applying straight from Class 12.',
+    typicalScore: '1200 – 1400+, depending on the university',
+    usedFor: 'Bachelors programs',
+    acceptedIn: ['United States', 'Canada', 'United Kingdom', 'Australia', 'Dubai & Singapore'],
+    facts: [
+      { label: 'Score scale', value: '200 – 1600' },
+      { label: 'Test duration', value: 'About 2 hr 15 min' },
+      { label: 'Test fee (India)', value: 'Approx. ₹9,000 – 11,000' },
+      { label: 'Score validity', value: 'Recent scores preferred; check each university' },
+      { label: 'Format', value: 'Digital, at a test centre' },
+    ],
+    officialUrl: 'https://satsuite.collegeboard.org/sat',
+  },
+];
+
 export const offices = [
   { name: 'Gurugram · Head office', address: '4th Floor, Orion Tower, Sector 44, Gurugram 122003', phone: '+91 90000 00000', hours: 'Mon–Sat · 10am–7pm', order: 0 },
   { name: 'Bengaluru', address: '2nd Floor, Meridian Square, Indiranagar, Bengaluru 560038', phone: '+91 90000 00002', hours: 'Mon–Sat · 10am–7pm', order: 1 },
@@ -666,6 +885,9 @@ export const offices = [
 ];
 
 export const sections = [
+  { key: 'exams.head', label: 'Exams — page header', title: 'Pick the test |your course actually needs.', lead: 'English tests and admission exams, compared in plain language — scores, fees in INR, validity and where each one is accepted.' },
+  { key: 'exams.list', label: 'Exams — list', eyebrow: 'Exams we prepare you for', title: 'English tests and admission exams' },
+  { key: 'exams.colleges', label: 'Exams — find colleges by exam', eyebrow: 'Find colleges by exam', title: 'Where your score can take you', lead: 'Indicative scores most programs ask for. Share your score and a counsellor will send universities that match it.' },
   { key: 'home.counsellors', label: 'Home — top counsellors', eyebrow: 'Meet your counsellors', title: 'Talk to a senior counsellor today', lead: 'Pick the counsellor who knows your destination best, then call or WhatsApp them directly.' },
   { key: 'home.videos', label: 'Home — video testimonials', eyebrow: 'Hear it from students', title: 'Video stories from our admits', lead: 'Real students on how they chose a country, got the admit and cleared the visa.' },
   { key: 'home.founder', label: 'Home — founder connect', eyebrow: 'Founder connect', title: 'A note from our founder' },

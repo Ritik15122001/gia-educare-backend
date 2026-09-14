@@ -153,8 +153,27 @@ export const postSchema = z.object({
   tags: z.array(z.string().trim().max(40)).max(10).optional(),
   category: z.string().trim().max(60).regex(/^[a-z0-9-]*$/, 'Pick a category').optional(),
   destination: z.string().trim().max(80).regex(/^[a-z0-9-]*$/, 'Pick a country').optional(),
+  exam: z.string().trim().max(80).regex(/^[a-z0-9-]*$/, 'Pick an exam').optional(),
   // Accepts the <input type="date"> value the admin sends, or a full ISO string.
   publishedAt: z.coerce.date().optional(),
+  ...contentBase,
+});
+
+export const examSchema = z.object({
+  slug,
+  name: z.string().trim().min(2, 'Exam name is required').max(40),
+  fullName: z.string().trim().max(160).optional(),
+  kind: z.string().trim().max(60).optional(),
+  summary: z.string().trim().max(300).optional(),
+  description: z.string().trim().max(1500).optional(),
+  typicalScore: z.string().trim().max(120).optional(),
+  usedFor: z.string().trim().max(120).optional(),
+  acceptedIn: z.array(z.string().trim().max(60)).max(12).optional(),
+  facts: z
+    .array(z.object({ label: z.string().trim().min(1).max(60), value: z.string().trim().min(1).max(120) }))
+    .max(10)
+    .optional(),
+  officialUrl: z.string().trim().max(300).optional(),
   ...contentBase,
 });
 

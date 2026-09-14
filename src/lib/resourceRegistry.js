@@ -16,6 +16,7 @@ import { ComparisonRow } from '../models/ComparisonRow.js';
 import { Post } from '../models/Post.js';
 import { PostCategory } from '../models/PostCategory.js';
 import { VideoTestimonial } from '../models/VideoTestimonial.js';
+import { Exam } from '../models/Exam.js';
 
 import * as V from '../validators/content.validators.js';
 
@@ -69,8 +70,15 @@ export const RESOURCES = [
     name: 'posts',
     model: Post,
     schema: V.postSchema,
-    searchable: ['title', 'excerpt', 'body', 'author', 'tags', 'category', 'destination'],
+    searchable: ['title', 'excerpt', 'body', 'author', 'tags', 'category', 'destination', 'exam'],
     beforeWrite: autoSlug('title'),
+  },
+  {
+    name: 'exams',
+    model: Exam,
+    schema: V.examSchema,
+    searchable: ['name', 'fullName', 'kind', 'summary', 'usedFor'],
+    beforeWrite: autoSlug('name'),
   },
   { name: 'post-categories', model: PostCategory, schema: V.postCategorySchema, searchable: ['label', 'key'] },
   {

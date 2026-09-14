@@ -14,6 +14,7 @@ import { ComparisonRow } from '../models/ComparisonRow.js';
 import { Post } from '../models/Post.js';
 import { PostCategory } from '../models/PostCategory.js';
 import { VideoTestimonial } from '../models/VideoTestimonial.js';
+import { Exam } from '../models/Exam.js';
 import { Section } from '../models/Section.js';
 import { SiteSetting } from '../models/SiteSetting.js';
 
@@ -42,6 +43,7 @@ export async function getSiteContent() {
     posts,
     postCategories,
     videoTestimonials,
+    exams,
   ] = await Promise.all([
     SiteSetting.getSingleton(),
     Section.find().sort('key'),
@@ -61,6 +63,7 @@ export async function getSiteContent() {
     Post.findPublished(),
     PostCategory.findPublished(),
     VideoTestimonial.findPublished(),
+    Exam.findPublished(),
   ]);
 
   // Sections are keyed for O(1) lookup on the frontend.
@@ -94,5 +97,6 @@ export async function getSiteContent() {
     postsRecent: posts.slice(0, 3),
     postCategories,
     videoTestimonials,
+    exams,
   };
 }

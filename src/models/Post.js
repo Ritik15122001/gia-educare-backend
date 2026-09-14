@@ -16,6 +16,8 @@ const postSchema = new mongoose.Schema(
     category: { type: String, default: '', lowercase: true, trim: true, index: true },
     // Destination.slug — ties the article to a country menu and detail page.
     destination: { type: String, default: '', lowercase: true, trim: true, index: true },
+    // Exam.slug — lists the article under that exam in the Exams menu and page.
+    exam: { type: String, default: '', lowercase: true, trim: true, index: true },
     publishedAt: { type: Date, default: Date.now, index: true },
   },
   { timestamps: true },
