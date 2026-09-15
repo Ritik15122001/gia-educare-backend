@@ -80,6 +80,11 @@ Base URL: `/api/v1`
 | GET | `/admin/enquiries/export` | CSV |
 | PATCH | `/admin/enquiries/:id` | status / assignee |
 | POST | `/admin/enquiries/:id/notes` | append an internal note |
+| GET·POST | `/admin/finance/entries` | income & expense entries — filter by from, to, type, plTag, category, search; `meta.totals` |
+| GET·PATCH·DELETE | `/admin/finance/entries/:id` | read / update / delete an entry |
+| GET | `/admin/finance/summary` | P&L statement for `from`–`to`: heads, profit lines, months |
+| GET | `/admin/finance/export` | CSV (same filters as the list) |
+| GET | `/admin/finance/options` | P&L tags with guidance, payment modes, category suggestions |
 | GET·PATCH | `/admin/settings` | site settings (admin+) |
 | GET·POST·PATCH·DELETE | `/admin/sections` | editable section copy |
 | GET·POST·DELETE | `/admin/uploads` | media library |

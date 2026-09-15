@@ -46,7 +46,13 @@ export const summary = asyncHandler(async (req, res) => {
       { $sort: { _id: 1 } },
     ]),
     Enquiry.find(match()).sort('-createdAt').limit(6).select('name email destination status createdAt'),
-    canSeeActivity ? AuditLog.find({ action: { $ne: 'login' } }).sort('-createdAt').limit(8) : null,
+    canSeeActivity
+      ? AuditLog.find({
+        action: { $ne: 'login' },
+        // Finance lines carry amounts — only for roles that can open Finance.
+        ...(hasPermission(req.access, 'finance.view', 'finance.edit') ? {} : { resource: { $ne: 'finance' } }),
+      }).sort('-createdAt').limit(8)
+      : null,
     canSeeContent
       ? Promise.all(
         RESOURCES.map(async (r) => ({

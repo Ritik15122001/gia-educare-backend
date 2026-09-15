@@ -42,6 +42,16 @@ export const MODULE_GROUPS = [
     ],
   },
   {
+    key: 'finance',
+    label: 'Finance',
+    modules: [
+      mod('finance', 'Expenses & P&L', {
+        actionLabels: { edit: 'Add & edit entries' },
+        note: 'Viewing includes the P&L statement and CSV export.',
+      }),
+    ],
+  },
+  {
     key: 'content',
     label: 'Website content',
     // Every content collection is its own module, in the registry's own order.
