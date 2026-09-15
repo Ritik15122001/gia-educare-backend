@@ -19,12 +19,12 @@ const siteSettingSchema = new mongoose.Schema(
     tagline: { type: String, default: 'Study · Apply · Fly', trim: true },
     logoUrl: { type: String, default: '/logo.jpg', trim: true },
     topbarMessage: { type: String, default: 'Free profile evaluation — limited slots for the Sept 2027 intake' },
-    phonePrimary: { type: String, default: '+91 90000 00000' },
-    phoneSecondary: { type: String, default: '+91 90000 00001' },
-    emailPrimary: { type: String, default: 'hello@giaeducare.com' },
-    emailAdmissions: { type: String, default: 'admissions@giaeducare.com' },
+    phonePrimary: { type: String, default: "+91 99534 14741" },
+    phoneSecondary: { type: String, default: "+91 98106 49827" },
+    emailPrimary: { type: String, default: "info@giaeducare.com" },
+    emailAdmissions: { type: String, default: '' },
     hours: { type: String, default: 'Monday – Saturday, 10:00 am – 7:00 pm IST' },
-    addressLine: { type: String, default: 'Orion Tower, Sector 44, Gurugram' },
+    addressLine: { type: String, default: "307, Second Floor, G25, Sector 3, Noida 201301" },
     footerBlurb: {
       type: String,
       default:
@@ -32,10 +32,11 @@ const siteSettingSchema = new mongoose.Schema(
     },
     offices: { type: [officeSchema], default: [] },
     socials: {
-      instagram: { type: String, default: '' },
-      linkedin: { type: String, default: '' },
-      youtube: { type: String, default: '' },
-      whatsapp: { type: String, default: '' },
+      facebook: { type: String, default: "https://www.facebook.com/giaeducare" },
+      instagram: { type: String, default: "https://www.instagram.com/giaeducare" },
+      linkedin: { type: String, default: "https://linkedin.com/in/giaeducare/" },
+      youtube: { type: String, default: "https://www.youtube.com/@giaeducare" },
+      whatsapp: { type: String, default: "https://wa.me/919953414741" },
     },
     seo: {
       title: { type: String, default: 'GIA Educare – Study Abroad Consultants' },
@@ -46,6 +47,17 @@ const siteSettingSchema = new mongoose.Schema(
       },
     },
     notifyEnquiriesTo: { type: String, default: '' },
+
+    // Footer legal line and policy pages, and the office map on the contact page.
+    legalEntity: { type: String, default: "A Study Abroad Unit of HolidayAlong Hospitality LLP", trim: true },
+    legalLinks: {
+      privacy: { type: String, default: "https://giaeducare.com/privacy-policy", trim: true },
+      terms: { type: String, default: "https://giaeducare.com/terms-of-service", trim: true },
+      refund: { type: String, default: "https://giaeducare.com/refund-policy", trim: true },
+    },
+    // A Google Maps link (e.g. https://maps.google.com/?q=lat,lng); the website
+    // embeds it and links "Get directions" to it.
+    mapUrl: { type: String, default: "https://maps.google.com/?q=28.580475,77.320351", trim: true },
 
     // "Founder connect" — a personal note plus every channel to reach them.
     founder: {

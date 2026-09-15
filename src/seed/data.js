@@ -2,12 +2,12 @@
 // admin panel has real rows to edit from day one.
 
 export const services = [
-  { slug: 'profile-evaluation', title: 'Profile evaluation', icon: 'target', description: 'We map your academics, budget, test scores and career goal to a realistic target list — ambitious, moderate and safe.' },
-  { slug: 'university-shortlisting', title: 'University shortlisting', icon: 'search', description: 'Course-level comparison on ranking, fees, intake, scholarships, post-study work rights and graduate outcomes.' },
-  { slug: 'sop-lor-essays', title: 'SOP, LOR & essays', icon: 'document', description: 'Structured drafting sessions with editors who have read thousands of admits — your voice, sharpened, never templated.' },
-  { slug: 'test-prep', title: 'IELTS / TOEFL / GRE prep', icon: 'shield-check', description: 'Diagnostic test, a 6-week plan and small-batch live classes with weekly mocks and score-band tracking.' },
-  { slug: 'visa-documentation', title: 'Visa & documentation', icon: 'briefcase', description: 'Financial documents, SOP for visa, mock interviews and file review before submission — the step most applications fail on.' },
-  { slug: 'loans-scholarships', title: 'Loans & scholarships', icon: 'coins', description: 'Merit and need-based scholarship applications, plus collateral-free education loan options from partner lenders.' },
+  { slug: "profile-evaluation", title: "Profile Evaluation", icon: "target", description: "We assess your academics, budget, test scores and career goals to build a realistic university shortlist." },
+  { slug: "university-shortlisting", title: "University Shortlisting", icon: "search", description: "Compare universities and courses based on ranking, fees, scholarships, entry requirements and career outcomes." },
+  { slug: "application-admission", title: "Application & Admission", icon: "cap", description: "We manage your applications, documents, deadlines and admission process from submission to offer letter." },
+  { slug: "sop-lor-essays", title: "SOP, LOR & Essays", icon: "document", description: "Expert guidance to help you present your profile authentically and build stronger application documents." },
+  { slug: "visa-documentation", title: "Visa & Documentation", icon: "briefcase", description: "End-to-end guidance for financial documents, visa forms, interviews and submission preparation." },
+  { slug: "loans-scholarships", title: "Loans, Scholarships & Pre-Departure", icon: "coins", description: "Explore suitable funding options and get practical guidance before you begin your journey abroad." },
 ];
 
 export const destinations = [
@@ -102,7 +102,7 @@ export const destinations = [
     tags: ['Tech & pharma', 'EU degree', 'English-taught'],
   },
   {
-    slug: 'new-zealand', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Mitre_Peak_of_Milford_Sound%2C_New_Zealand%3B_February_2015.jpg/960px-Mitre_Peak_of_Milford_Sound%2C_New_Zealand%3B_February_2015.jpg', name: 'New Zealand', flag: '🇳🇿', tag: 'Quality of life', showOnHome: false,
+    slug: 'new-zealand', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Mitre_Peak_of_Milford_Sound%2C_New_Zealand%3B_February_2015.jpg/960px-Mitre_Peak_of_Milford_Sound%2C_New_Zealand%3B_February_2015.jpg', name: 'New Zealand', flag: '🇳🇿', tag: 'Quality of life', showOnHome: true,
     bg: 'linear-gradient(150deg,#B08234,#3B2708)',
     blurb: 'Small cohorts, high quality of life and open work rights for partners of postgraduate students.',
     meta: ['Feb / Jul', '₹14 – 22 Lakh / yr', 'Fee-paying visa'],
@@ -117,7 +117,7 @@ export const destinations = [
     tags: ['Partner work visa', 'Agriculture', 'Small classes'],
   },
   {
-    slug: 'dubai-singapore', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Marina_Bay_skyline_sunset_%28Unsplash%29.jpg/960px-Marina_Bay_skyline_sunset_%28Unsplash%29.jpg', name: 'Dubai & Singapore', flag: '🇦🇪', tag: 'Close to home', showOnHome: false,
+    slug: 'dubai-singapore', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Marina_Bay_skyline_sunset_%28Unsplash%29.jpg/960px-Marina_Bay_skyline_sunset_%28Unsplash%29.jpg', name: 'Dubai & Singapore', flag: '🇦🇪', tag: 'Close to home', showOnHome: true,
     bg: 'linear-gradient(150deg,#5B3E8F,#1A1030)',
     blurb: 'Global campuses of Western universities, two to five hours from home.',
     meta: ['Sep / Jan / rolling', '₹13 – 29 Lakh / yr', 'Employer-sponsored'],
@@ -171,10 +171,10 @@ export const testimonials = [
 ];
 
 export const team = [
-  { initials: 'RM', name: 'Rhea Malhotra', role: 'Founder · US & Canada', bio: 'Twelve years in admissions consulting. Handles US graduate applications and funding strategy.', featured: true, specialisation: 'USA & Canada · masters and funding', experienceYears: 12, studentsCounselled: 3200, languages: ['English', 'Hindi'], phone: '+91 90000 00010', whatsapp: '+91 90000 00010' },
-  { initials: 'AV', name: 'Arjun Verma', role: 'UK & Ireland desk', bio: 'Former UK university recruiter. Knows exactly what each admissions office actually reads.', featured: true, specialisation: 'UK & Ireland admissions', experienceYears: 9, studentsCounselled: 2100, languages: ['English', 'Hindi', 'Punjabi'], phone: '+91 90000 00011', whatsapp: '+91 90000 00011' },
-  { initials: 'SN', name: 'Sana Nair', role: 'Visa & documentation', bio: 'Runs file review and mock interviews. Has taken over 3,000 files through submission.', featured: true, specialisation: 'Visas, loans and documentation', experienceYears: 10, studentsCounselled: 3000, languages: ['English', 'Malayalam', 'Hindi'], phone: '+91 90000 00012', whatsapp: '+91 90000 00012' },
-  { initials: 'DK', name: 'Dev Kulkarni', role: 'Test prep lead', bio: 'IELTS and GRE trainer. Builds the six-week plans and runs the weekly mock reviews.', featured: true, specialisation: 'Germany, IELTS & GRE', experienceYears: 7, studentsCounselled: 1500, languages: ['English', 'Marathi', 'Hindi'], phone: '+91 90000 00013', whatsapp: '+91 90000 00013' },
+  { initials: 'RM', name: 'Rhea Malhotra', role: 'Founder · US & Canada', bio: 'Twelve years in admissions consulting. Handles US graduate applications and funding strategy.', featured: true, specialisation: 'USA & Canada · masters and funding', experienceYears: 12, studentsCounselled: 3200, languages: ['English', 'Hindi'], phone: '+91 99534 14741', whatsapp: '+91 99534 14741' },
+  { initials: 'AV', name: 'Arjun Verma', role: 'UK & Ireland desk', bio: 'Former UK university recruiter. Knows exactly what each admissions office actually reads.', featured: true, specialisation: 'UK & Ireland admissions', experienceYears: 9, studentsCounselled: 2100, languages: ['English', 'Hindi', 'Punjabi'], phone: '+91 99534 14741', whatsapp: '+91 99534 14741' },
+  { initials: 'SN', name: 'Sana Nair', role: 'Visa & documentation', bio: 'Runs file review and mock interviews. Has taken over 3,000 files through submission.', featured: true, specialisation: 'Visas, loans and documentation', experienceYears: 10, studentsCounselled: 3000, languages: ['English', 'Malayalam', 'Hindi'], phone: '+91 99534 14741', whatsapp: '+91 99534 14741' },
+  { initials: 'DK', name: 'Dev Kulkarni', role: 'Test prep lead', bio: 'IELTS and GRE trainer. Builds the six-week plans and runs the weekly mock reviews.', featured: true, specialisation: 'Germany, IELTS & GRE', experienceYears: 7, studentsCounselled: 1500, languages: ['English', 'Marathi', 'Hindi'], phone: '+91 99534 14741', whatsapp: '+91 99534 14741' },
 ];
 
 export const milestones = [
@@ -200,11 +200,11 @@ export const stats = [
 ];
 
 export const processSteps = [
-  { num: '01', title: 'Free counselling', description: 'A free call with a senior counsellor to understand your goal, budget and timeline.' },
-  { num: '02', title: 'Shortlist & tests', description: 'Target list locked, IELTS/GRE plan begins alongside.' },
-  { num: '03', title: 'Applications', description: 'SOP, LORs, transcripts and portal submissions handled with you.' },
-  { num: '04', title: 'Offers & funding', description: 'Compare offers, claim scholarships, arrange the loan and deposit.' },
-  { num: '05', title: 'Visa & fly', description: 'File prep, mock interview, pre-departure briefing, done.' },
+  { num: "01", title: "Profile & Counselling", description: "Start with a personalised consultation to understand your academic profile, career goals, budget and preferred timeline." },
+  { num: "02", title: "Shortlist & Test Preparation", description: "Build your university shortlist and plan the tests you need, including IELTS, TOEFL, GRE, GMAT and other requirements." },
+  { num: "03", title: "Applications & Admissions", description: "Prepare your SOP, LORs and documents, complete applications and track every submission through the admission process." },
+  { num: "04", title: "Offers, Scholarships & Funding", description: "Compare your offers, explore scholarship opportunities and get guidance on education loans and deposit requirements." },
+  { num: "05", title: "Visa & Pre-Departure", description: "Prepare your visa documents, complete interview preparation and get ready for your journey with our pre-departure guidance." },
 ];
 
 export const faqs = [
@@ -751,9 +751,9 @@ export const founder = {
   title: 'Founder & Lead Counsellor',
   photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Coffee-desk-laptop-notebook_%2824244320481%29.jpg/960px-Coffee-desk-laptop-notebook_%2824244320481%29.jpg',
   message: "I started GIA Educare after being mis-advised as a student myself. Every family deserves honest odds, a clear budget and one person who stays with them to the finish line. If you have a question, message me directly — I read every one.",
-  email: 'founder@giaeducare.com',
-  phone: '+91 90000 00010',
-  whatsapp: '+91 90000 00010',
+  email: "info@giaeducare.com",
+  phone: '+91 99534 14741',
+  whatsapp: '+91 99534 14741',
   linkedin: '',
   instagram: '',
   youtube: '',
@@ -897,13 +897,11 @@ export const clients = [
 ];
 
 export const offices = [
-  { name: 'Gurugram · Head office', address: '4th Floor, Orion Tower, Sector 44, Gurugram 122003', phone: '+91 90000 00000', hours: 'Mon–Sat · 10am–7pm', order: 0 },
-  { name: 'Bengaluru', address: '2nd Floor, Meridian Square, Indiranagar, Bengaluru 560038', phone: '+91 90000 00002', hours: 'Mon–Sat · 10am–7pm', order: 1 },
-  { name: 'Pune', address: 'Unit 11, Aurora Business Park, Baner, Pune 411045', phone: '+91 90000 00003', hours: 'Mon–Sat · 10am–7pm', order: 2 },
+  { name: "Noida · Head office", address: "307, Second Floor, G25, Sector 3, Noida 201301", phone: "+91 99534 14741", hours: "Mon–Sat · 10am–7pm", order: 0 },
 ];
 
 export const sections = [
-  { key: 'home.clients', label: 'Home — clients', eyebrow: 'Our clients', title: 'Universities we have worked with', lead: 'Business schools and universities across the US, UK, Ireland, Germany and France that trust us with their student recruitment.' },
+  { key: 'home.clients', label: 'Home — clients', eyebrow: "University network", title: "Universities Our Students Choose", lead: "Explore leading universities and business schools across the US, UK, Ireland, Germany, France and other popular study destinations." },
   { key: 'exams.head', label: 'Exams — page header', title: 'Pick the test |your course actually needs.', lead: 'English tests and admission exams, compared in plain language — scores, fees in INR, validity and where each one is accepted.' },
   { key: 'exams.list', label: 'Exams — list', eyebrow: 'Exams we prepare you for', title: 'English tests and admission exams' },
   { key: 'exams.colleges', label: 'Exams — find colleges by exam', eyebrow: 'Find colleges by exam', title: 'Where your score can take you', lead: 'Indicative scores most programs ask for. Share your score and a counsellor will send universities that match it.' },
@@ -914,11 +912,11 @@ export const sections = [
   { key: 'blog.head', label: 'Blog — page header', title: 'Notes from the |counselling desk.', lead: 'No listicles and no brochure copy. What we actually tell students about costs, applications, visas and funding — written by the counsellors who handle the files.' },
   { key: 'blog.list', label: 'Blog — article list', eyebrow: 'All articles', title: 'Latest from GIA Educare' },
   { key: 'blog.cta', label: 'Blog — CTA', eyebrow: 'Still have a question?', title: 'Reading only gets you so far. Ask a counsellor.', lead: 'Fifteen minutes on a call is worth three weeks of forum reading. Tell us where you are and we will give you an honest read on your options.' },
-  { key: 'home.hero', label: 'Home — hero', eyebrow: '🌍 25+ countries · 850+ partner universities', title: 'Your degree abroad, |guided end to end.', lead: 'From shortlisting the right university to stamping your visa — GIA Educare gives you one counsellor, one plan and zero guesswork. Start with a free profile evaluation.', ctaLabel: 'Get free counselling' },
-  { key: 'home.services', label: 'Home — services', eyebrow: 'What we do', title: 'Everything between |"I want to study abroad"| and boarding the flight', lead: 'One dedicated counsellor stays with you through all seven stages. No handoffs, no chasing, no surprise fees.' },
-  { key: 'home.destinations', label: 'Home — destinations', eyebrow: 'Where you can go', title: 'Six destinations our students pick most', lead: 'Each one has a different sweet spot — cost, duration, work rights or PR pathway. We help you pick on evidence, not on trends.' },
-  { key: 'home.why', label: 'Home — why us', eyebrow: 'Why GIA Educare', title: "We are paid to get you admitted — not to fill a university's seats", lead: 'Most consultancies push whichever campus pays the highest commission. We publish our shortlisting criteria, show you the trade-offs, and let you decide.' },
-  { key: 'home.process', label: 'Home — process', eyebrow: 'The process', title: 'Five steps. Nine to twelve months.' },
+  { key: 'home.hero', label: 'Home — hero', eyebrow: '🌍 25+ countries · 850+ partner universities', title: 'Your degree abroad, |guided end to end.', lead: 'From university shortlisting to application and visa guidance, GIA Educare gives you one counsellor, one clear plan and personalised support at every step. Start with a free profile evaluation.', ctaLabel: 'Get free counselling' },
+  { key: 'home.services', label: 'Home — services', eyebrow: "What we do", title: "From Your First Question to |Your Flight| — We're With You.", lead: "One dedicated counsellor supports you through every stage — from profile evaluation and university selection to applications, visa and pre-departure guidance." },
+  { key: 'home.destinations', label: 'Home — destinations', eyebrow: "Where you can go", title: "Where Your Study Abroad Journey Can Take You", lead: "Explore leading study destinations based on your course, budget, career goals, post-study opportunities and long-term plans. We help you choose on evidence, not trends." },
+  { key: 'home.why', label: 'Home — why us', eyebrow: "Why GIA Educare", title: "Your Goals Come First. Not a University Quota.", lead: "We recommend universities based on your profile, goals, budget and career plans—not simply because a particular option is available." },
+  { key: 'home.process', label: 'Home — process', eyebrow: "The process", title: "Five Steps From Profile to Departure.", lead: "A clear, guided process from your first counselling session to university admission, visa and pre-departure." },
   { key: 'home.testimonials', label: 'Home — testimonials', eyebrow: 'Student stories', title: 'Admits, in their own words', lead: "Sample testimonials — swap these for your own students' quotes before launch." },
   { key: 'home.cta', label: 'Home — closing CTA', eyebrow: 'Start here', title: 'Book a free 1:1 profile evaluation', lead: "Tell us where you are today. You'll get an honest read on your chances, a shortlist direction and a timeline — on the call itself, not after a sales pitch." },
   { key: 'destinations.head', label: 'Destinations — page header', title: 'Pick the country before you pick the campus.', lead: 'Cost, course length, work rights and residency pathways differ enormously. Here is the honest comparison we walk every student through — no country is "the best", only the best fit for your profile.' },
@@ -933,10 +931,10 @@ export const sections = [
   { key: 'about.story', label: 'About — story', eyebrow: 'Our story', title: "We lost two years to bad advice. You shouldn't have to." },
   { key: 'about.values', label: 'About — values', eyebrow: 'What we hold to', title: "Four rules we don't bend" },
   { key: 'about.team', label: 'About — team', eyebrow: 'The team', title: 'Senior counsellors, not call-centre staff', lead: 'Sample profiles for layout — replace with your actual team before launch.' },
-  { key: 'about.cta', label: 'About — CTA', eyebrow: 'Say hello', title: 'Come in for a coffee, or just book the call', lead: 'Walk into any of our three offices, or take the whole process remotely — most of our students never visit in person and it makes no difference to the outcome.' },
+  { key: 'about.cta', label: 'About — CTA', eyebrow: 'Say hello', title: 'Come in for a coffee, or just book the call', lead: 'Walk into our Noida office, or take the whole process remotely — most of our students never visit in person and it makes no difference to the outcome.' },
   { key: 'contact.head', label: 'Contact — page header', title: "Let's map your route out.", lead: 'Fill the form and a counsellor calls you back within one working day — or just phone the office. Counselling is free and there is no obligation to sign up for anything.' },
   { key: 'contact.form', label: 'Contact — form', eyebrow: 'Enquiry form', title: 'Tell us about your plan' },
-  { key: 'contact.offices', label: 'Contact — offices', eyebrow: 'Walk in', title: 'Three offices, one standard' },
+  { key: 'contact.offices', label: 'Contact — offices', eyebrow: 'Walk in', title: 'Visit our office' },
   { key: 'contact.faq', label: 'Contact — FAQ', eyebrow: 'FAQ', title: 'Questions we get every week' },
   { key: 'contact.cta', label: 'Contact — CTA', eyebrow: 'Prefer WhatsApp?', title: "Message us and we'll call back at a time you pick", lead: "Drop your number here, tell us when you're free, and a counsellor will call. If you'd rather have everything in writing, say so — we'll email instead." },
 ];

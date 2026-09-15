@@ -25,6 +25,7 @@ export const settingsSchema = z.object({
     .optional(),
   socials: z
     .object({
+      facebook: z.string().trim().max(300).optional(),
       instagram: z.string().trim().max(300).optional(),
       linkedin: z.string().trim().max(300).optional(),
       youtube: z.string().trim().max(300).optional(),
@@ -47,6 +48,15 @@ export const settingsSchema = z.object({
       'Use valid email addresses, separated by commas',
     )
     .optional(),
+  legalEntity: z.string().trim().max(160).optional(),
+  legalLinks: z
+    .object({
+      privacy: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
+      terms: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
+      refund: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
+    })
+    .optional(),
+  mapUrl: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
   founder: z
     .object({
       enabled: z.boolean().optional(),
