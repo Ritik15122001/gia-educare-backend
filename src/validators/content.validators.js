@@ -3,6 +3,12 @@ import { contentBase } from './common.validators.js';
 import { SERVICE_ICONS } from '../models/Service.js';
 
 const iconEnum = z.enum(SERVICE_ICONS);
+const pair = (labelMax, valueMax) =>
+  z.object({
+    label: z.string().trim().min(1, 'Required').max(labelMax),
+    value: z.string().trim().min(1, 'Required').max(valueMax),
+  });
+
 const slug = z
   .string()
   .trim()
@@ -41,6 +47,17 @@ export const courseSchema = z.object({
   tuition: z.string().trim().max(60).optional(),
   topPicks: z.string().trim().max(120).optional(),
   note: z.string().trim().max(160).optional(),
+
+  // Course detail page — every block optional.
+  imageUrl: z.string().trim().max(500).optional(),
+  overview: z.string().trim().max(4000).optional(),
+  highlights: z.array(z.string().trim().max(160)).max(12).optional(),
+  curriculum: z.array(pair(80, 400)).max(20).optional(),
+  eligibility: z.array(z.string().trim().max(200)).max(12).optional(),
+  careerOutcomes: z.array(z.string().trim().max(120)).max(15).optional(),
+  universities: z.array(z.string().trim().max(120)).max(30).optional(),
+  feeBreakdown: z.array(pair(80, 120)).max(12).optional(),
+  faqs: z.array(pair(300, 1500)).max(15).optional(),
   ...contentBase,
 });
 
