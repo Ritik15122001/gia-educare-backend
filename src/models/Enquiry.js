@@ -56,6 +56,10 @@ const enquirySchema = new mongoose.Schema(
     assignedAt: { type: Date, default: null },
     notes: { type: [noteSchema], default: [] },
 
+    // Set when a counsellor adds or imports the lead rather than the student
+    // submitting the website form.
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+
     // Where the lead came from, for attribution.
     source: { type: String, default: 'website', trim: true },
     sourcePage: { type: String, default: '', trim: true },

@@ -7,6 +7,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { parseListQuery, buildMeta } from '../utils/pagination.js';
 import { recordAudit } from '../models/AuditLog.js';
 import { logger } from '../config/logger.js';
+import { manualLeadSchema } from '../validators/enquiry.validators.js';
 import { queueLeadNotifications } from '../services/email.service.js';
 import { leadScopeFilter, hasPermission, sortRoles } from '../services/access.service.js';
 import { SUPER_ADMIN } from '../lib/permissions.js';
@@ -224,4 +225,77 @@ export const exportCsv = asyncHandler(async (req, res) => {
   res.header('Content-Type', 'text/csv');
   res.attachment(`gia-enquiries-${new Date().toISOString().slice(0, 10)}.csv`);
   return res.send(csv);
+});
+
+
+// --- staff-created leads ---------------------------------------------------
+
+export const create = asyncHandler(async (req, res) => {
+  const doc = await Enquiry.create({
+    ...req.body,
+    source: req.body.source || 'manual',
+    createdBy: req.user?.id,
+  });
+  await recordAudit({ req, action: 'create', resource: 'enquiries', resourceId: doc.id, summary: `Added lead ${doc.email}` });
+  return created(res, doc);
+});
+
+/**
+ * Bulk import from a spreadsheet.
+ *
+ * Every row is validated on its own so one bad line cannot sink the file: the
+ * good rows import and the bad ones come back with the row number and reason
+ * for the person to fix. Existing leads are matched on email or phone.
+ */
+export const importLeads = asyncHandler(async (req, res) => {
+  const { rows, duplicates, source } = req.body;
+
+  const valid = [];
+  const failed = [];
+
+  rows.forEach((raw, index) => {
+    const parsed = manualLeadSchema.safeParse(raw);
+    if (parsed.success) {
+      valid.push({ ...parsed.data, source: raw.source || source });
+    } else {
+      failed.push({
+        row: index + 2, // +2: header row plus 1-based counting, matching the spreadsheet
+        name: raw.name || raw.email || '(blank)',
+        errors: parsed.error.issues.map((i) => `${i.path.join('.') || 'row'}: ${i.message}`),
+      });
+    }
+  });
+
+  let imported = 0;
+  let updated = 0;
+  let skipped = 0;
+
+  for (const lead of valid) {
+    const existing = await Enquiry.findOne({ $or: [{ email: lead.email }, { phone: lead.phone }] });
+
+    if (!existing) {
+      await Enquiry.create({ ...lead, createdBy: req.user?.id });
+      imported += 1;
+      continue;
+    }
+
+    if (duplicates === 'update') {
+      Object.assign(existing, lead);
+      await existing.save();
+      updated += 1;
+    } else {
+      skipped += 1;
+    }
+  }
+
+  await recordAudit({
+    req,
+    action: 'create',
+    resource: 'enquiries',
+    summary: `Imported ${imported} lead(s), updated ${updated}, skipped ${skipped}`,
+  });
+
+  logger.info(`Lead import: ${imported} new, ${updated} updated, ${skipped} duplicates, ${failed.length} invalid`);
+
+  return ok(res, { imported, updated, skipped, failed, totalRows: rows.length });
 });

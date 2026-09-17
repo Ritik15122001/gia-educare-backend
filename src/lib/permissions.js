@@ -36,6 +36,7 @@ export const MODULE_GROUPS = [
         extras: [
           { key: 'leads.assign', label: 'Assign to roles and people' },
           { key: 'leads.export', label: 'Export CSV' },
+          { key: 'leads.import', label: 'Add & import leads' },
         ],
         note: 'Which enquiries they see is set by "Can see" above.',
       }),
