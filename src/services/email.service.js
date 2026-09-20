@@ -468,16 +468,16 @@ export function enquiryConfirmationEmail(enquiry, settings) {
 export function accountCreatedEmail(user, createdByName, settingsOrBrand) {
   const settings = typeof settingsOrBrand === 'object' && settingsOrBrand ? settingsOrBrand : { brand: settingsOrBrand || 'GIA Educare' };
   const brand = settings.brand || 'GIA Educare';
-  const subject = `You now have access to the ${brand} admin panel`;
+  const subject = `You now have access to the ${brand} CRM`;
   const bodyHtml = `
-    <p style="margin:0 0 14px;font-size:15px;line-height:1.65">Hi ${esc(user.name)}, ${esc(createdByName || 'an administrator')} has added you to the ${esc(brand)} admin panel as <b>${esc(String(user.roleName || user.role).replace('_', ' '))}</b>.</p>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.65">Hi ${esc(user.name)}, ${esc(createdByName || 'an administrator')} has added you to the ${esc(brand)} CRM as <b>${esc(String(user.roleName || user.role).replace('_', ' '))}</b>.</p>
     <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:${C.muted}">Your temporary password will be shared with you separately. Please change it from <b>Profile</b> after your first sign-in.</p>
-    <div style="margin:0 0 22px">${button(`${env.ADMIN_URL}/login`, 'Sign in to the admin panel')}</div>`;
+    <div style="margin:0 0 22px">${button(`${env.ADMIN_URL}/login`, 'Sign in to the CRM')}</div>`;
   return {
     to: user.email,
     subject,
     html: layout({ settings, preheader: subject, eyebrow: 'Team access', heading: 'Welcome to the team', bodyHtml }),
-    text: `${createdByName || 'An administrator'} added you to the ${brand} admin panel. Sign in: ${env.ADMIN_URL}/login`,
+    text: `${createdByName || 'An administrator'} added you to the ${brand} CRM. Sign in: ${env.ADMIN_URL}/login`,
   };
 }
 
