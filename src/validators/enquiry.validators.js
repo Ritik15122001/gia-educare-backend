@@ -36,10 +36,21 @@ export const updateEnquirySchema = z.object({
   // Assign to a role (every member sees the lead) and optionally one person in it.
   assignedRole: z.string().trim().max(60).optional(),
   assignedTo: objectId.nullable().optional(),
+  // A date (YYYY-MM-DD) or datetime; null clears the reminder.
+  followUpAt: z
+    .union([z.string().trim().min(1), z.null()])
+    .refine((v) => v === null || !Number.isNaN(Date.parse(v)), 'Enter a valid follow-up date')
+    .optional(),
 });
 
 export const addNoteSchema = z.object({
   body: z.string().trim().min(1, 'Note cannot be empty').max(2000),
+  // A remark usually comes with "call them back on…", so both travel together.
+  status: z.enum(ENQUIRY_STATUSES).optional(),
+  followUpAt: z
+    .union([z.string().trim().min(1), z.null()])
+    .refine((v) => v === null || !Number.isNaN(Date.parse(v)), 'Enter a valid follow-up date')
+    .optional(),
 });
 
 // ---------------------------------------------------------------------------

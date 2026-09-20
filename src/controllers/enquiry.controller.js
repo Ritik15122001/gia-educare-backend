@@ -61,6 +61,26 @@ async function withRoleNames(docs) {
 
 const findScoped = (req) => Enquiry.findOne(scoped(req, { _id: req.params.id }));
 
+// Follow-up queues run on the server's day, so "today" means today for the
+// team working the leads rather than for whoever's browser asked.
+function followUpWindow() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+  return { start, end };
+}
+
+// today = due today · missed = due before today and still open · none = nothing scheduled
+export function followUpFilter(key) {
+  const { start, end } = followUpWindow();
+  if (key === 'today') return { followUpAt: { $gte: start, $lt: end } };
+  if (key === 'missed') return { followUpAt: { $lt: start, $ne: null }, status: { $nin: ['converted', 'closed'] } };
+  if (key === 'upcoming') return { followUpAt: { $gte: end } };
+  if (key === 'none') return { followUpAt: null };
+  return null;
+}
+
 export const list = asyncHandler(async (req, res) => {
   const { page, limit, skip, sort } = parseListQuery(req.query, { defaultSort: '-createdAt' });
   const filter = {};
@@ -81,6 +101,8 @@ export const list = asyncHandler(async (req, res) => {
     filter.assignedRole = { $in: ['', null] };
   } else if (/^[0-9a-f]{24}$/i.test(req.query.assignedTo || '')) filter.assignedTo = req.query.assignedTo;
   if (req.query.assignedRole) filter.assignedRole = req.query.assignedRole;
+  const followUp = followUpFilter(req.query.followUp);
+  if (followUp) Object.assign(filter, followUp);
   if (req.query.from || req.query.to) {
     filter.createdAt = {};
     if (req.query.from) filter.createdAt.$gte = new Date(req.query.from);
@@ -88,17 +110,23 @@ export const list = asyncHandler(async (req, res) => {
   }
 
   const query = scoped(req, filter);
-  const [items, total, statusCounts] = await Promise.all([
+  const [items, total, statusCounts, dueToday, missed] = await Promise.all([
     Enquiry.find(query).sort(sort).skip(skip).limit(limit).populate('assignedTo', ASSIGNEE_FIELDS),
     Enquiry.countDocuments(query),
     // Pipeline chips count everything the user can see, regardless of the other filters.
     Enquiry.aggregate([{ $match: leadScopeFilter(req) }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+    Enquiry.countDocuments(scoped(req, followUpFilter('today'))),
+    Enquiry.countDocuments(scoped(req, followUpFilter('missed'))),
   ]);
 
   const counts = ENQUIRY_STATUSES.reduce((acc, s) => ({ ...acc, [s]: 0 }), {});
   statusCounts.forEach(({ _id, count }) => { counts[_id] = count; });
 
-  return ok(res, await withRoleNames(items), { ...buildMeta({ page, limit, total }), counts });
+  return ok(res, await withRoleNames(items), {
+    ...buildMeta({ page, limit, total }),
+    counts,
+    followUps: { today: dueToday, missed },
+  });
 });
 
 export const get = asyncHandler(async (req, res) => {
@@ -128,6 +156,15 @@ export const update = asyncHandler(async (req, res) => {
     if (!hasPermission(req.access, 'leads.edit')) throw ApiError.forbidden('Your role cannot change lead status');
     doc.status = req.body.status;
     changes.push(`status → ${doc.status}`);
+  }
+
+  if (req.body.followUpAt !== undefined) {
+    if (!hasPermission(req.access, 'leads.edit')) throw ApiError.forbidden('Your role cannot set follow-ups');
+    const next = req.body.followUpAt ? new Date(req.body.followUpAt) : null;
+    if (String(next) !== String(doc.followUpAt)) {
+      doc.followUpAt = next;
+      changes.push(next ? `follow-up ${next.toISOString().slice(0, 10)}` : 'follow-up cleared');
+    }
   }
 
   if (req.body.assignedRole !== undefined || req.body.assignedTo !== undefined) {
@@ -182,7 +219,10 @@ export const addNote = asyncHandler(async (req, res) => {
   if (!doc) throw ApiError.notFound('Enquiry not found');
 
   doc.notes.push({ body: req.body.body, author: req.user.id, authorName: req.user.name });
-  await doc.save();
+  // A remark is usually logged together with "call them back on…".
+  if (req.body.status !== undefined) doc.status = req.body.status;
+  if (req.body.followUpAt !== undefined) doc.followUpAt = req.body.followUpAt ? new Date(req.body.followUpAt) : null;
+  await doc.save({ validateModifiedOnly: true });
   await doc.populate('assignedTo', ASSIGNEE_FIELDS);
   return ok(res, await withRoleNames(doc));
 });
@@ -202,7 +242,7 @@ export const exportCsv = asyncHandler(async (req, res) => {
 
   const headers = [
     'Created', 'Name', 'Email', 'Phone', 'Destination', 'Budget', 'Level', 'Intake', 'Test', 'Qualification',
-    'Status', 'Assigned role', 'Assigned to', 'Referral', 'UTM source', 'UTM medium', 'UTM campaign', 'Came from', 'Message',
+    'Status', 'Follow-up', 'Assigned role', 'Assigned to', 'Referral', 'UTM source', 'UTM medium', 'UTM campaign', 'Came from', 'Message',
   ];
   const quote = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   // Free-text lead fields are user input: neutralise cells Excel would evaluate
@@ -217,7 +257,7 @@ export const exportCsv = asyncHandler(async (req, res) => {
     ...rows.map((r) => [
       escape(r.createdAt.toISOString()),
       escape(r.name), escape(r.email), quote(`${r.code} ${r.phone}`), escape(r.destination), escape(r.budget),
-      escape(r.level), escape(r.intake), escape(r.test), escape(r.qual), escape(r.status), escape(r.assignedRole), escape(r.assignedTo?.name), escape(r.referral),
+      escape(r.level), escape(r.intake), escape(r.test), escape(r.qual), escape(r.status), quote(r.followUpAt ? r.followUpAt.toISOString().slice(0, 10) : ''), escape(r.assignedRole), escape(r.assignedTo?.name), escape(r.referral),
       escape(r.utmSource), escape(r.utmMedium), escape(r.utmCampaign), escape(r.sourcePage), escape(r.message),
     ].join(',')),
   ].join('\n');

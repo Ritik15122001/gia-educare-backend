@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { toJSONPlugin } from './plugins.js';
 
-export const ENQUIRY_STATUSES = ['new', 'contacted', 'qualified', 'converted', 'closed'];
+// 'not_connected' = we tried to reach them and could not get through.
+export const ENQUIRY_STATUSES = ['new', 'contacted', 'not_connected', 'qualified', 'converted', 'closed'];
 
 // Total budget for the whole program, in INR. Shared with the validator and
 // mirrored by the website's form options — keep all three identical.
@@ -55,6 +56,10 @@ const enquirySchema = new mongoose.Schema(
     assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     assignedAt: { type: Date, default: null },
     notes: { type: [noteSchema], default: [] },
+
+    // When the counsellor plans to call back. Drives the "today" and
+    // "missed" follow-up queues; null means nothing is scheduled.
+    followUpAt: { type: Date, default: null, index: true },
 
     // Set when a counsellor adds or imports the lead rather than the student
     // submitting the website form.
