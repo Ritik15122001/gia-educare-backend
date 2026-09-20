@@ -33,4 +33,5 @@ export const listQuerySchema = z.object({
   assignedTo: z.string().optional(), // 'me' | 'none' | user id
   assignedRole: z.string().optional(),
   followUp: z.enum(['today', 'missed', 'upcoming', 'none']).optional().or(z.literal('')),
+  unread: z.enum(['true', 'false']).optional(),
 });

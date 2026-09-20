@@ -8,6 +8,7 @@ import * as sectionCtrl from '../../controllers/section.controller.js';
 import * as userCtrl from '../../controllers/user.controller.js';
 import * as roleCtrl from '../../controllers/role.controller.js';
 import * as dashboardCtrl from '../../controllers/dashboard.controller.js';
+import * as notificationCtrl from '../../controllers/notification.controller.js';
 import * as uploadCtrl from '../../controllers/upload.controller.js';
 import { requireAuth, canManageUsers, requirePermission } from '../../middleware/auth.js';
 import { hasPermission, canEditSomething } from '../../services/access.service.js';
@@ -25,6 +26,12 @@ router.use(requireAuth);
 
 // Open to every role; the controller scopes what it returns.
 router.get('/dashboard', dashboardCtrl.summary);
+
+// Notifications are personal: every signed-in user reads and clears their own.
+router.get('/notifications', validate(listQuerySchema, 'query'), notificationCtrl.list);
+router.post('/notifications/read-all', notificationCtrl.markAllRead);
+router.delete('/notifications/read', notificationCtrl.clearRead);
+router.patch('/notifications/:id/read', validate(idParamSchema, 'params'), notificationCtrl.markRead);
 
 // Content collections (destinations, courses, faqs, …)
 router.use('/', contentRoutes);

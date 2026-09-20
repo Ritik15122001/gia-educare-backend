@@ -8,7 +8,8 @@ import { parseListQuery, buildMeta } from '../utils/pagination.js';
 import { recordAudit } from '../models/AuditLog.js';
 import { logger } from '../config/logger.js';
 import { manualLeadSchema } from '../validators/enquiry.validators.js';
-import { queueLeadNotifications } from '../services/email.service.js';
+import { queueLeadNotifications, queueAssignmentEmail } from '../services/email.service.js';
+import { leadAudience, notifyUsers, queueNotification } from '../services/notification.service.js';
 import { leadScopeFilter, hasPermission, sortRoles } from '../services/access.service.js';
 import { SUPER_ADMIN } from '../lib/permissions.js';
 
@@ -30,6 +31,14 @@ export const submit = asyncHandler(async (req, res) => {
   // Team alert + student confirmation go out after the response, per the
   // switches in Admin → Email & SMTP. A mail failure never fails the lead.
   queueLeadNotifications(enquiry);
+
+  // Same news in the CRM's own notification feed.
+  queueNotification(async () => notifyUsers(await leadAudience(), {
+    type: 'lead.new',
+    title: `New lead: ${enquiry.name}`,
+    body: [enquiry.destination, enquiry.budget].filter(Boolean).join(' · ') || enquiry.email,
+    link: `/enquiries/${enquiry.id}`,
+  }));
 
   // Only echo back what the success screen needs — never the whole record.
   return created(res, {
@@ -186,9 +195,11 @@ export const update = asyncHandler(async (req, res) => {
       }
     }
 
+    let roleName = '';
     if (role) {
       const roleDoc = await Role.findOne({ key: role });
       if (!roleDoc) throw ApiError.badRequest('That role does not exist');
+      roleName = roleDoc.name;
       if (role !== SUPER_ADMIN && !roleDoc.permissions.includes('leads.view')) {
         throw ApiError.badRequest(`The ${roleDoc.name} role cannot view leads — give it "View enquiries" first`);
       }
@@ -201,6 +212,20 @@ export const update = asyncHandler(async (req, res) => {
       doc.assignedBy = role || personId ? req.user._id : null;
       doc.assignedAt = role || personId ? new Date() : null;
       changes.push(role || personId ? `assigned to ${[role, personDoc?.name].filter(Boolean).join(' / ')}` : 'unassigned');
+
+      if (role || personId) {
+        const label = [personDoc?.name, roleName].filter(Boolean).join(' · ');
+        queueNotification(async () => notifyUsers(
+          personDoc ? [personDoc] : (await leadAudience({ assignedRole: role })),
+          {
+            type: 'lead.assigned',
+            title: personDoc ? `${doc.name} is assigned to you` : `${doc.name} is assigned to ${label}`,
+            body: [doc.destination, doc.budget].filter(Boolean).join(' · ') || doc.email,
+            link: `/enquiries/${doc.id}`,
+          },
+        ));
+        if (personDoc) queueAssignmentEmail(doc, personDoc);
+      }
     }
   }
 
@@ -277,6 +302,18 @@ export const create = asyncHandler(async (req, res) => {
     createdBy: req.user?.id,
   });
   await recordAudit({ req, action: 'create', resource: 'enquiries', resourceId: doc.id, summary: `Added lead ${doc.email}` });
+
+  // Tell the rest of the team, but not the person who just typed it in.
+  queueNotification(async () => notifyUsers(
+    (await leadAudience()).filter((u) => String(u._id) !== String(req.user._id)),
+    {
+      type: 'lead.new',
+      title: `${req.user.name} added a lead: ${doc.name}`,
+      body: [doc.destination, doc.budget].filter(Boolean).join(' · ') || doc.email,
+      link: `/enquiries/${doc.id}`,
+    },
+  ));
+
   return created(res, doc);
 });
 

@@ -15,7 +15,7 @@ import {
   enquiryAlertEmail,
   enquiryConfirmationEmail,
   accountCreatedEmail,
-  SAMPLE_ENQUIRY,
+  SAMPLE_ENQUIRY, assignmentEmail,
 } from '../services/email.service.js';
 
 // The password never leaves the server — only whether one is saved and usable.
@@ -101,6 +101,7 @@ export const logs = asyncHandler(async (req, res) => {
 const PREVIEWS = {
   'admin-alert': (settings) => ({ ...enquiryAlertEmail(SAMPLE_ENQUIRY, settings), to: 'your team' }),
   'student-confirmation': (settings) => enquiryConfirmationEmail(SAMPLE_ENQUIRY, settings),
+  'lead-assigned': (settings) => ({ ...assignmentEmail(SAMPLE_ENQUIRY, { name: 'Arjun Verma', email: 'arjun@example.com' }, settings), to: 'the counsellor' }),
   'account-created': (settings) => accountCreatedEmail({ name: 'Arjun Verma', email: 'arjun@example.com', roleName: 'Counsellor' }, 'GIA Admin', settings),
   test: (settings) => testEmail('you@example.com', settings),
 };

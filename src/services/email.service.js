@@ -219,13 +219,42 @@ export async function notifyNewEnquiry(enquiry) {
   const results = {};
 
   if (prefs.notifyAdmin) {
-    const to = prefs.adminRecipients || settings.notifyEnquiriesTo || settings.emailAdmissions || settings.emailPrimary;
+    // Explicit recipients win; otherwise every active team member who can see
+    // leads is told, falling back to the site's own addresses.
+    const to = prefs.adminRecipients || (await teamRecipients()) || settings.notifyEnquiriesTo || settings.emailAdmissions || settings.emailPrimary;
     results.admin = await sendEmail({ ...enquiryAlertEmail(enquiry, settings), to }, { type: 'lead-admin-alert', enquiryId });
   }
   if (prefs.notifyStudent) {
     results.student = await sendEmail(enquiryConfirmationEmail(enquiry, settings), { type: 'lead-student-confirmation', enquiryId });
   }
   return results;
+}
+
+/** Everyone on the team who can work leads, as a comma-separated To list. */
+async function teamRecipients() {
+  try {
+    const { leadAudience } = await import('./notification.service.js');
+    const users = await leadAudience();
+    return users.map((u) => u.email).filter(Boolean).join(', ');
+  } catch {
+    return '';
+  }
+}
+
+/** A lead handed to a counsellor → that counsellor's inbox. */
+export async function notifyAssignment(enquiry, user) {
+  if (!user?.email) return null;
+  const settings = await SiteSetting.getSingleton();
+  return sendEmail({ ...assignmentEmail(enquiry, user, settings), to: user.email }, {
+    type: 'lead-assigned',
+    enquiryId: enquiry.id || enquiry._id,
+  });
+}
+
+export function queueAssignmentEmail(enquiry, user) {
+  setImmediate(() => {
+    notifyAssignment(enquiry, user).catch((err) => logger.error(`[email] assignment notice failed: ${err.message}`));
+  });
 }
 
 export function queueLeadNotifications(enquiry) {
@@ -280,7 +309,9 @@ const sectionTitle = (text) =>
 /** Branded shell matching the website: navy header, gold accents, cream ground. */
 function layout({ settings, preheader, eyebrow, heading, bodyHtml, footerNote }) {
   const brand = settings?.brand || 'GIA Educare';
-  const logo = absolute(settings?.logoUrl || '/logo.jpg');
+  // Inboxes cannot reach localhost, so only ship a logo with a public URL.
+  const logoUrl = absolute(settings?.logoUrl || '/logo.jpg');
+  const logo = /^https?:\/\/(localhost|127\.|0\.0\.0\.0)/i.test(logoUrl) ? '' : logoUrl;
   const socials = Object.entries(settings?.socials || {}).filter(([, url]) => url);
   const contact = [
     settings?.phonePrimary && `<a href="tel:+${digits(settings.phonePrimary)}" style="color:${C.ink3};text-decoration:none">${esc(settings.phonePrimary)}</a>`,
@@ -298,7 +329,11 @@ function layout({ settings, preheader, eyebrow, heading, bodyHtml, footerNote })
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border:1px solid ${C.line};border-radius:18px;overflow:hidden">
   <tr><td style="background:${C.ink};padding:22px 30px">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td style="vertical-align:middle"><span style="display:inline-block;background:#ffffff;border-radius:10px;padding:6px 10px;line-height:0"><img src="${esc(logo)}" alt="${esc(brand)}" height="40" style="display:block;height:40px;width:auto;border:0"></span></td>
+      <td style="vertical-align:middle">${
+        logo
+          ? `<span style="display:inline-block;background:#ffffff;border-radius:10px;padding:6px 10px;line-height:0"><img src="${esc(logo)}" alt="${esc(brand)}" height="40" style="display:block;height:40px;width:auto;border:0"></span>`
+          : `<span style="display:inline-block;color:#ffffff;font-size:20px;font-weight:800;letter-spacing:.5px;font-family:Poppins,${FONT}">${esc(brand)}</span>`
+      }</td>
       <td align="right" style="vertical-align:middle;font-family:${FONT}"><span style="color:#ffffff;font-size:16px;font-weight:700">${esc(brand)}</span><br><span style="color:${C.gold};font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700">${esc(settings?.tagline || 'Study · Apply · Fly')}</span></td>
     </tr></table>
   </td></tr>
@@ -364,7 +399,7 @@ export function enquiryAlertEmail(enquiry, settings) {
       ['Landing page', enquiry.landingPage],
       ['Referring site', enquiry.referrerUrl],
     ]) || `<p style="margin:0 0 20px;font-size:13px;color:${C.muted}">Direct visit — no referral or campaign.</p>`}
-    <div style="margin:8px 0 22px">${button(`${env.ADMIN_URL}/enquiries/${enquiry.id || enquiry._id}`, 'Open lead in admin →')}</div>`;
+    <div style="margin:8px 0 22px">${button(`${env.ADMIN_URL}/enquiries/${enquiry.id || enquiry._id}`, 'Open lead in the CRM →')}</div>`;
 
   const text = [
     `New lead: ${enquiry.name}`,
@@ -379,7 +414,7 @@ export function enquiryAlertEmail(enquiry, settings) {
     `Referral: ${enquiry.referral || '-'} | Campaign: ${campaign || '-'}`,
     `Message: ${enquiry.message || '-'}`,
     '',
-    `Open in admin: ${env.ADMIN_URL}/enquiries/${enquiry.id || enquiry._id}`,
+    `Open in the CRM: ${env.ADMIN_URL}/enquiries/${enquiry.id || enquiry._id}`,
   ].join('\n');
 
   return {
@@ -390,7 +425,7 @@ export function enquiryAlertEmail(enquiry, settings) {
       eyebrow: 'New website lead',
       heading: `${enquiry.name} wants to study abroad`,
       bodyHtml,
-      footerNote: `You're receiving this because new-lead alerts are switched on for ${esc(brand)}. Manage recipients in Admin → Email &amp; SMTP.`,
+      footerNote: `You're receiving this because new-lead alerts are switched on for ${esc(brand)}. Manage recipients in the CRM → Email &amp; SMTP.`,
     }),
     text,
     replyTo: enquiry.email,
@@ -465,6 +500,47 @@ export function enquiryConfirmationEmail(enquiry, settings) {
 }
 
 /** New admin account → the person who was added. Never includes the password. */
+/** A lead assigned to a specific counsellor. */
+export function assignmentEmail(enquiry, user, settings) {
+  const brand = settings?.brand || 'GIA Educare';
+  const phone = fullPhone(enquiry);
+  const intl = digits(`${enquiry.code || ''}${enquiry.phone || ''}`);
+  const subject = `Assigned to you: ${enquiry.name}${enquiry.destination ? ` → ${enquiry.destination}` : ''}`;
+  const leadUrl = `${env.ADMIN_URL.replace(/\/$/, '')}/enquiries/${enquiry.id || enquiry._id}`;
+
+  const bodyHtml = `
+    <p style="margin:0 0 18px;font-size:15px;line-height:1.65">Hi ${esc(user.name?.split(' ')[0] || 'there')}, <b>${esc(enquiry.name)}</b> is now yours to follow up. Here is what they told us.</p>
+    ${table([
+      ['Student', enquiry.name],
+      ['Phone', phone],
+      ['Email', enquiry.email],
+      ['Destination', enquiry.destination],
+      ['Budget', enquiry.budget],
+      ['Study level', enquiry.level],
+      ['Intake', enquiry.intake],
+      ['Received', istDate(enquiry.createdAt)],
+    ])}
+    ${enquiry.message ? `${sectionTitle('In their words')}<p style="margin:0 0 20px;font-size:14px;line-height:1.7;background:${C.cream};border-left:3px solid ${C.gold};padding:12px 16px;border-radius:0 10px 10px 0">${esc(enquiry.message)}</p>` : ''}
+    <div style="margin:22px 0 6px">
+      ${button(leadUrl, 'Open the lead')}
+      ${intl ? button(`https://wa.me/${intl}`, 'WhatsApp', C.green, '#ffffff') : ''}
+      ${phone ? button(`tel:+${intl}`, 'Call now', C.ink, '#ffffff') : ''}
+    </div>`;
+
+  return {
+    subject,
+    html: layout({
+      settings,
+      preheader: `${enquiry.name} — ${phone}`,
+      eyebrow: 'Lead assigned to you',
+      heading: `${enquiry.name} is waiting for your call`,
+      bodyHtml,
+      footerNote: `Sent because this lead was assigned to you in the ${esc(brand)} CRM.`,
+    }),
+    text: `Assigned to you: ${enquiry.name} · ${phone} · ${enquiry.email}\nOpen: ${leadUrl}`,
+  };
+}
+
 export function accountCreatedEmail(user, createdByName, settingsOrBrand) {
   const settings = typeof settingsOrBrand === 'object' && settingsOrBrand ? settingsOrBrand : { brand: settingsOrBrand || 'GIA Educare' };
   const brand = settings.brand || 'GIA Educare';
