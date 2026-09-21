@@ -937,4 +937,10 @@ export const sections = [
   { key: 'contact.offices', label: 'Contact — offices', eyebrow: 'Walk in', title: 'Visit our office' },
   { key: 'contact.faq', label: 'Contact — FAQ', eyebrow: 'FAQ', title: 'Questions we get every week' },
   { key: 'contact.cta', label: 'Contact — CTA', eyebrow: 'Prefer WhatsApp?', title: "Message us and we'll call back at a time you pick", lead: "Drop your number here, tell us when you're free, and a counsellor will call. If you'd rather have everything in writing, say so — we'll email instead." },
+  // Only the header of each policy page is editable here — the documents
+  // themselves live in the website's src/data/legal.js, because they are legal
+  // text that should change through review rather than through a text box.
+  { key: 'legal.privacy', label: 'Privacy policy — page header', title: 'Privacy |policy', lead: 'What we collect when you enquire, why we collect it, who it is shared with, and how to have it removed.' },
+  { key: 'legal.terms', label: 'Terms of service — page header', title: 'Terms of |service', lead: 'The rules of the engagement — what we do, what we do not promise, what we expect from you, and how disputes are handled.' },
+  { key: 'legal.refund', label: 'Refund policy — page header', title: 'Refund |policy', lead: 'What is refundable, what is not, how to raise a request, and how long the money takes to come back.' },
 ];

@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+// Footer policy links: either a path on the website ("/privacy-policy") or a
+// full link to a policy hosted elsewhere.
+const legalLink = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((v) => !v || /^(https?:\/\/|\/)/i.test(v), 'Use a page path like /privacy-policy, or a full https:// link')
+  .optional();
+
 export const settingsSchema = z.object({
   brand: z.string().trim().min(1).max(80).optional(),
   tagline: z.string().trim().max(120).optional(),
@@ -51,9 +60,11 @@ export const settingsSchema = z.object({
   legalEntity: z.string().trim().max(160).optional(),
   legalLinks: z
     .object({
-      privacy: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
-      terms: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
-      refund: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),
+      // A path such as /privacy-policy points at the website's own policy pages;
+      // a full https:// link is still accepted for a policy hosted elsewhere.
+      privacy: legalLink,
+      terms: legalLink,
+      refund: legalLink,
     })
     .optional(),
   mapUrl: z.string().trim().max(500).refine((v) => !v || /^https?:\/\//i.test(v), 'Use a full https:// link').optional(),

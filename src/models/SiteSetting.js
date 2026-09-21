@@ -50,10 +50,12 @@ const siteSettingSchema = new mongoose.Schema(
 
     // Footer legal line and policy pages, and the office map on the contact page.
     legalEntity: { type: String, default: "A Study Abroad Unit of HolidayAlong Hospitality LLP", trim: true },
+    // Relative by default — the website serves these three pages itself. An
+    // absolute URL still works if a policy is hosted elsewhere.
     legalLinks: {
-      privacy: { type: String, default: "https://giaeducare.com/privacy-policy", trim: true },
-      terms: { type: String, default: "https://giaeducare.com/terms-of-service", trim: true },
-      refund: { type: String, default: "https://giaeducare.com/refund-policy", trim: true },
+      privacy: { type: String, default: '/privacy-policy', trim: true },
+      terms: { type: String, default: '/terms-of-service', trim: true },
+      refund: { type: String, default: '/refund-policy', trim: true },
     },
     // A Google Maps link (e.g. https://maps.google.com/?q=lat,lng); the website
     // embeds it and links "Get directions" to it.
