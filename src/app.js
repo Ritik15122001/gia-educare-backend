@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import routes from './routes/index.js';
+import * as uploadCtrl from './controllers/upload.controller.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter } from './middleware/rateLimit.js';
@@ -54,6 +55,8 @@ export function createApp() {
   }
 
   app.use('/uploads', express.static(path.resolve('uploads'), { maxAge: '7d' }));
+  // Falls back to the database copy when the deploy wiped the disk.
+  app.get('/uploads/:filename', uploadCtrl.serveStored);
 
   app.use('/api/v1', generalLimiter, routes);
 
