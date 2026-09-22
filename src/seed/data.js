@@ -940,7 +940,7 @@ export const sections = [
   // Only the header of each policy page is editable here — the documents
   // themselves live in the website's src/data/legal.js, because they are legal
   // text that should change through review rather than through a text box.
-  { key: 'legal.privacy', label: 'Privacy policy — page header', title: 'Privacy |policy', lead: 'What we collect when you enquire, why we collect it, who it is shared with, and how to have it removed.' },
-  { key: 'legal.terms', label: 'Terms of service — page header', title: 'Terms of |service', lead: 'The rules of the engagement — what we do, what we do not promise, what we expect from you, and how disputes are handled.' },
-  { key: 'legal.refund', label: 'Refund policy — page header', title: 'Refund |policy', lead: 'What is refundable, what is not, how to raise a request, and how long the money takes to come back.' },
+  { key: 'legal.privacy', label: 'Privacy policy — page header', title: 'Privacy |policy', lead: 'How GIA Educare collects, uses, stores, shares and protects your personal information when you enquire with us or use our counselling and study-abroad services.' },
+  { key: 'legal.terms', label: 'Terms of service — page header', title: 'Terms of |service', lead: 'The terms that govern your use of the GIA Educare website, our counselling and our application-support services.' },
+  { key: 'legal.refund', label: 'Refund policy — page header', title: 'Refund & cancellation |policy', lead: 'How service fees, cancellations and third-party charges are treated when you buy or use a GIA Educare service.' },
 ];
