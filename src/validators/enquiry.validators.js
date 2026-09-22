@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ENQUIRY_STATUSES, BUDGET_RANGES } from '../models/Enquiry.js';
+import { ENQUIRY_STATUSES, BUDGET_RANGES, LEAD_TYPES } from '../models/Enquiry.js';
 import { objectId } from './common.validators.js';
 
 export const createEnquirySchema = z.object({
@@ -33,6 +33,8 @@ export const createEnquirySchema = z.object({
 
 export const updateEnquirySchema = z.object({
   status: z.enum(ENQUIRY_STATUSES).optional(),
+  // B2C (a student) or B2B (a partner, agent or school).
+  leadType: z.enum(LEAD_TYPES).optional(),
   // Assign to a role (every member sees the lead) and optionally one person in it.
   assignedRole: z.string().trim().max(60).optional(),
   assignedTo: objectId.nullable().optional(),
@@ -80,6 +82,7 @@ export const manualLeadSchema = z.object({
   referral: optionalText(120),
   source: optionalText(60),
   status: z.enum(ENQUIRY_STATUSES).optional().default('new'),
+  leadType: z.enum(LEAD_TYPES).optional().default('b2c'),
   assignedTo: objectId.nullable().optional(),
   consent: z.boolean().optional().default(true),
 });

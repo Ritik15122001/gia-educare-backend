@@ -4,6 +4,14 @@ import { toJSONPlugin } from './plugins.js';
 // 'not_connected' = we tried to reach them and could not get through.
 export const ENQUIRY_STATUSES = ['new', 'contacted', 'not_connected', 'qualified', 'converted', 'closed'];
 
+/**
+ * Who the lead is. `b2c` is a student enquiring for themselves — every website
+ * enquiry is one. `b2b` is a partner, agent, school or company sending business
+ * our way, added by the team rather than through the public form.
+ */
+export const LEAD_TYPES = ['b2c', 'b2b'];
+export const LEAD_TYPE_LABELS = { b2c: 'B2C', b2b: 'B2B' };
+
 // Total budget for the whole program, in INR. Shared with the validator and
 // mirrored by the website's form options — keep all three identical.
 export const BUDGET_RANGES = ['Up to ₹10 Lakh', '₹10 – 20 Lakh', '₹20 – 30 Lakh', '₹30 – 50 Lakh', 'Above ₹50 Lakh'];
@@ -49,6 +57,7 @@ const enquirySchema = new mongoose.Schema(
     referrerUrl: { type: String, default: '', trim: true, maxlength: 500 },
     landingPage: { type: String, default: '', trim: true, maxlength: 300 },
 
+    leadType: { type: String, enum: LEAD_TYPES, default: 'b2c', index: true },
     status: { type: String, enum: ENQUIRY_STATUSES, default: 'new', index: true },
     // Assignment: a role (all its members see the lead) plus, optionally, one member of it.
     assignedRole: { type: String, default: '', trim: true, index: true },

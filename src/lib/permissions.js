@@ -59,6 +59,20 @@ export const MODULE_GROUPS = [
     modules: RESOURCES.map((r) => mod(r.name, r.label || r.name)),
   },
   {
+    key: 'workspace',
+    label: 'Team workspace',
+    modules: [
+      mod('formats', 'Message & email formats', {
+        actionLabels: { edit: 'Add & edit formats' },
+        note: 'The approved wording the team copies when replying to a lead.',
+      }),
+      mod('documents', 'Document library', {
+        actionLabels: { edit: 'Upload documents' },
+        note: 'Uploading is super-admin only unless you tick it for a role here.',
+      }),
+    ],
+  },
+  {
     key: 'site',
     label: 'Site',
     modules: [
@@ -125,6 +139,7 @@ export const DEFAULT_ROLES = [
       ...CONTENT_KEYS.flatMap((k) => [`${k}.view`, `${k}.edit`]),
       'sections.view', 'sections.edit',
       'media.view', 'media.edit',
+      'formats.view', 'documents.view',
     ],
     leadScope: 'assigned',
     system: true,
@@ -133,7 +148,7 @@ export const DEFAULT_ROLES = [
     key: 'counsellor',
     name: 'Counsellor',
     description: 'Works the enquiries assigned to them or their role.',
-    permissions: ['leads.view', 'leads.edit'],
+    permissions: ['leads.view', 'leads.edit', 'formats.view', 'documents.view'],
     leadScope: 'assigned',
     system: false,
   },

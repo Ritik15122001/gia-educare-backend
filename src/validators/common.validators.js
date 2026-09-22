@@ -4,6 +4,10 @@ export const objectId = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid id');
 
 export const idParamSchema = z.object({ id: objectId });
 
+// `validate` replaces req.params with the parsed object, so a route with two
+// params needs both declared or the second one disappears.
+export const nestedIdParamSchema = z.object({ id: objectId, docId: objectId });
+
 export const reorderSchema = z.object({
   items: z
     .array(z.object({ id: objectId, order: z.number().int().min(0) }))
@@ -33,5 +37,7 @@ export const listQuerySchema = z.object({
   assignedTo: z.string().optional(), // 'me' | 'none' | user id
   assignedRole: z.string().optional(),
   followUp: z.enum(['today', 'missed', 'upcoming', 'none']).optional().or(z.literal('')),
+  leadType: z.enum(['b2c', 'b2b']).optional().or(z.literal('')),
+  channel: z.string().optional(),
   unread: z.enum(['true', 'false']).optional(),
 });

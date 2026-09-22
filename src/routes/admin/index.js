@@ -2,6 +2,7 @@ import { Router } from 'express';
 import contentRoutes from './content.routes.js';
 import enquiryRoutes from './enquiry.routes.js';
 import financeRoutes from './finance.routes.js';
+import workspaceRoutes from './workspace.routes.js';
 import * as settingsCtrl from '../../controllers/settings.controller.js';
 import * as emailCtrl from '../../controllers/email.controller.js';
 import * as sectionCtrl from '../../controllers/section.controller.js';
@@ -40,6 +41,9 @@ router.use('/enquiries', enquiryRoutes);
 
 // Expenses, income and the P&L statement — hand-written, never public.
 router.use('/finance', financeRoutes);
+
+// Message formats and the document library — also internal, also never public.
+router.use('/', workspaceRoutes);
 
 // Editable section copy
 const canViewSections = requirePermission('sections.view', 'sections.edit');

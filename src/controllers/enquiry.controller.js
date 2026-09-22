@@ -1,6 +1,7 @@
-import { Enquiry, ENQUIRY_STATUSES } from '../models/Enquiry.js';
+import { Enquiry, ENQUIRY_STATUSES, LEAD_TYPES, LEAD_TYPE_LABELS } from '../models/Enquiry.js';
 import { User } from '../models/User.js';
 import { Role } from '../models/Role.js';
+import { LeadDocument } from '../models/LeadDocument.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ok, created, noContent } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -55,7 +56,8 @@ export const submit = asyncHandler(async (req, res) => {
 const ASSIGNEE_FIELDS = 'name email role';
 
 // Combines a request filter with the user's lead scope without clobbering either's $or.
-const scoped = (req, filter = {}) => {
+// Exported so the lead-document routes narrow by exactly the same rule.
+export const scoped = (req, filter = {}) => {
   const scope = leadScopeFilter(req);
   return Object.keys(scope).length ? { $and: [scope, filter] } : filter;
 };
@@ -95,6 +97,10 @@ export const list = asyncHandler(async (req, res) => {
   const filter = {};
 
   if (req.query.status) filter.status = req.query.status;
+  // A lead written before the field existed has no leadType at all, and it is a
+  // B2C one — $in with null matches a missing field as well as an explicit one.
+  if (req.query.leadType === 'b2c') filter.leadType = { $in: ['b2c', null] };
+  else if (req.query.leadType) filter.leadType = req.query.leadType;
   if (req.query.destination) filter.destination = req.query.destination;
   if (req.query.budget) filter.budget = req.query.budget;
   // referral=any → every referred lead; anything else matches that code exactly.
@@ -119,22 +125,28 @@ export const list = asyncHandler(async (req, res) => {
   }
 
   const query = scoped(req, filter);
-  const [items, total, statusCounts, dueToday, missed] = await Promise.all([
+  const [items, total, statusCounts, dueToday, missed, typeCounts] = await Promise.all([
     Enquiry.find(query).sort(sort).skip(skip).limit(limit).populate('assignedTo', ASSIGNEE_FIELDS),
     Enquiry.countDocuments(query),
     // Pipeline chips count everything the user can see, regardless of the other filters.
     Enquiry.aggregate([{ $match: leadScopeFilter(req) }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
     Enquiry.countDocuments(scoped(req, followUpFilter('today'))),
     Enquiry.countDocuments(scoped(req, followUpFilter('missed'))),
+    Enquiry.aggregate([{ $match: leadScopeFilter(req) }, { $group: { _id: '$leadType', count: { $sum: 1 } } }]),
   ]);
 
   const counts = ENQUIRY_STATUSES.reduce((acc, s) => ({ ...acc, [s]: 0 }), {});
   statusCounts.forEach(({ _id, count }) => { counts[_id] = count; });
 
+  // Rows written before the field existed have no leadType; they are B2C.
+  const leadTypes = LEAD_TYPES.reduce((acc, t) => ({ ...acc, [t]: 0 }), {});
+  typeCounts.forEach(({ _id, count }) => { leadTypes[_id || 'b2c'] += count; });
+
   return ok(res, await withRoleNames(items), {
     ...buildMeta({ page, limit, total }),
     counts,
     followUps: { today: dueToday, missed },
+    leadTypes,
   });
 });
 
@@ -165,6 +177,12 @@ export const update = asyncHandler(async (req, res) => {
     if (!hasPermission(req.access, 'leads.edit')) throw ApiError.forbidden('Your role cannot change lead status');
     doc.status = req.body.status;
     changes.push(`status → ${doc.status}`);
+  }
+
+  if (req.body.leadType !== undefined && req.body.leadType !== doc.leadType) {
+    if (!hasPermission(req.access, 'leads.edit')) throw ApiError.forbidden('Your role cannot change the lead type');
+    doc.leadType = req.body.leadType;
+    changes.push(`type → ${LEAD_TYPE_LABELS[doc.leadType]}`);
   }
 
   if (req.body.followUpAt !== undefined) {
@@ -255,6 +273,8 @@ export const addNote = asyncHandler(async (req, res) => {
 export const remove = asyncHandler(async (req, res) => {
   const doc = await findScoped(req);
   if (!doc) throw ApiError.notFound('Enquiry not found');
+  // Attachments belong to the lead; nothing else can reach them once it is gone.
+  await LeadDocument.deleteMany({ enquiry: doc._id });
   await doc.deleteOne();
   await recordAudit({ req, action: 'delete', resource: 'enquiries', resourceId: doc.id, summary: `Deleted enquiry ${doc.email}` });
   return noContent(res);
@@ -262,11 +282,14 @@ export const remove = asyncHandler(async (req, res) => {
 
 // CSV export for the sales team.
 export const exportCsv = asyncHandler(async (req, res) => {
-  const filter = req.query.status ? { status: req.query.status } : {};
+  const filter = {};
+  if (req.query.status) filter.status = req.query.status;
+  if (req.query.leadType === 'b2c') filter.leadType = { $in: ['b2c', null] };
+  else if (req.query.leadType) filter.leadType = req.query.leadType;
   const rows = await Enquiry.find(scoped(req, filter)).sort('-createdAt').limit(5000).populate('assignedTo', 'name');
 
   const headers = [
-    'Created', 'Name', 'Email', 'Phone', 'Destination', 'Budget', 'Level', 'Intake', 'Test', 'Qualification',
+    'Created', 'Name', 'Email', 'Phone', 'Type', 'Destination', 'Budget', 'Level', 'Intake', 'Test', 'Qualification',
     'Status', 'Follow-up', 'Assigned role', 'Assigned to', 'Referral', 'UTM source', 'UTM medium', 'UTM campaign', 'Came from', 'Message',
   ];
   const quote = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -281,7 +304,7 @@ export const exportCsv = asyncHandler(async (req, res) => {
     headers.join(','),
     ...rows.map((r) => [
       escape(r.createdAt.toISOString()),
-      escape(r.name), escape(r.email), quote(`${r.code} ${r.phone}`), escape(r.destination), escape(r.budget),
+      escape(r.name), escape(r.email), quote(`${r.code} ${r.phone}`), escape(LEAD_TYPE_LABELS[r.leadType] || 'B2C'), escape(r.destination), escape(r.budget),
       escape(r.level), escape(r.intake), escape(r.test), escape(r.qual), escape(r.status), quote(r.followUpAt ? r.followUpAt.toISOString().slice(0, 10) : ''), escape(r.assignedRole), escape(r.assignedTo?.name), escape(r.referral),
       escape(r.utmSource), escape(r.utmMedium), escape(r.utmCampaign), escape(r.sourcePage), escape(r.message),
     ].join(',')),
