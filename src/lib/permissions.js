@@ -147,8 +147,8 @@ export const DEFAULT_ROLES = [
   {
     key: 'counsellor',
     name: 'Counsellor',
-    description: 'Works the enquiries assigned to them or their role.',
-    permissions: ['leads.view', 'leads.edit', 'formats.view', 'documents.view'],
+    description: 'Works the enquiries assigned to them or their role, and can add new ones.',
+    permissions: ['leads.view', 'leads.edit', 'leads.import', 'formats.view', 'documents.view'],
     leadScope: 'assigned',
     system: false,
   },
