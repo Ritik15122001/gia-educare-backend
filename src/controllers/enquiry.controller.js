@@ -319,23 +319,55 @@ export const exportCsv = asyncHandler(async (req, res) => {
 // --- staff-created leads ---------------------------------------------------
 
 export const create = asyncHandler(async (req, res) => {
+  // Whoever adds a lead by hand owns it by default — otherwise it only shows
+  // up for them if their role has "all" lead scope, and an "assigned" scope
+  // counsellor who just typed it in would immediately lose sight of it. An
+  // explicit assignedTo in the body (not currently sent by the admin form,
+  // but honoured if it ever is) overrides this and is resolved to that
+  // person's role, same as the assign-from-detail-page flow.
+  let assignedRole = req.user.role;
+  let assignedTo = req.user._id;
+
+  if (req.body.assignedTo && String(req.body.assignedTo) !== String(req.user._id)) {
+    if (!hasPermission(req.access, 'leads.assign')) throw ApiError.forbidden('Your role cannot assign leads to someone else');
+    const person = await User.findOne({ _id: req.body.assignedTo, active: true });
+    if (!person) throw ApiError.badRequest('That team member does not exist or is deactivated');
+    assignedRole = person.role;
+    assignedTo = person._id;
+  }
+
   const doc = await Enquiry.create({
     ...req.body,
     source: req.body.source || 'manual',
     createdBy: req.user?.id,
+    assignedRole,
+    assignedTo,
+    assignedBy: req.user._id,
+    assignedAt: new Date(),
   });
   await recordAudit({ req, action: 'create', resource: 'enquiries', resourceId: doc.id, summary: `Added lead ${doc.email}` });
 
-  // Tell the rest of the team, but not the person who just typed it in.
-  queueNotification(async () => notifyUsers(
-    (await leadAudience()).filter((u) => String(u._id) !== String(req.user._id)),
-    {
+  // Tell the rest of the team, but not the person who just typed it in (and,
+  // if they handed it straight to someone else, that person gets the normal
+  // assignment notification below instead of the generic "new lead" one).
+  const audience = (await leadAudience({ assignedRole })).filter((u) => String(u._id) !== String(req.user._id));
+  if (String(assignedTo) !== String(req.user._id)) {
+    queueNotification(async () => notifyUsers(audience, {
+      type: 'lead.assigned',
+      title: `${req.user.name} added and assigned a lead to you: ${doc.name}`,
+      body: [doc.destination, doc.budget].filter(Boolean).join(' · ') || doc.email,
+      link: `/enquiries/${doc.id}`,
+    }));
+    const person = await User.findById(assignedTo);
+    if (person) queueAssignmentEmail(doc, person);
+  } else {
+    queueNotification(async () => notifyUsers(audience, {
       type: 'lead.new',
       title: `${req.user.name} added a lead: ${doc.name}`,
       body: [doc.destination, doc.budget].filter(Boolean).join(' · ') || doc.email,
       link: `/enquiries/${doc.id}`,
-    },
-  ));
+    }));
+  }
 
   return created(res, doc);
 });
